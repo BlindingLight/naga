@@ -84,13 +84,13 @@ class Router extends nComponent
 
 		if (!isset($route->{$route->method}))
 		{
-			$this->profiler()->timer('routeUri')->stop();
+			$this->profiler()->stopTimer('routeUri');
 			throw new Exception\ConfigException("Badly configured route, missing 'get'.");
 		}
 
 		if (is_callable($route->{$route->method}))
 		{
-			$this->profiler()->timer('routeUri')->stop();
+			$this->profiler()->stopTimer('routeUri');
 			return call_user_func_array($route->{$route->method}, $route->parameters);
 		}
 		else
@@ -99,12 +99,12 @@ class Router extends nComponent
 			try
 			{
 				$controller = new $className();
-				$this->profiler()->timer('routeUri')->stop();
+				$this->profiler()->stopTimer('routeUri');
 				return $controller->{$methodName}($route->parameters);
 			}
 			catch (\Exception $e)
 			{
-				$this->profiler()->timer('routeUri')->stop();
+				$this->profiler()->stopTimer('routeUri');
 				return $route->{$route->method} . ":\n" . $e->getMessage();
 			}
 		}
@@ -131,7 +131,7 @@ class Router extends nComponent
 				$finalized[preg_replace('/{([a-zA-Z0-9]+)\|(.+)}/', '$1', $part)] = array_shift($parameters);
 		}
 
-		$this->profiler()->timer('getParameters')->stop();
+		$this->profiler()->stopTimer('getParameters');
 		return $finalized;
 	}
 
@@ -148,29 +148,26 @@ class Router extends nComponent
 		foreach ($this->_urlMappings as $mappedUrl => $routeName)
 		{
 			$pattern = $this->createRegexFromMappedUrl($mappedUrl);
-			if (!$pattern)
-				continue;
-
 			$matches = array();
 			if (preg_match($pattern, $uri, $matches))
 			{
-				$routeName = $this->_urlMappings[$mappedUrl];
 				if (isset($this->_routes[$routeName]->domain)
 					&& !$this->domainCheck($this->request()->domainName(), $this->_routes[$routeName]->domain))
 				{
 					continue;
 				}
 
-				$this->_routes[$routeName]->parameters = array_splice($matches, 1, count($matches) - 1);
+				array_shift($matches);
+				$this->_routes[$routeName]->parameters = $matches;
 				$this->_matchedMappedUrl = $mappedUrl;
-				$this->profiler()->timer('matchUri')->stop();
+				$this->profiler()->stopTimer('matchUri');
 				return $this->_routes[$routeName];
 			}
 		}
 
-		$route = $this->_routes[$this->defaultRouteName()];
+		$route = $this->_routes[$this->_defaultRoute];
 		$route->parameters = array();
-		$this->profiler()->timer('matchUri')->stop();
+		$this->profiler()->stopTimer('matchUri');
 		return $route;
 	}
 
@@ -189,7 +186,7 @@ class Router extends nComponent
 
 		if (count($domainParts) != count($expectedParts))
 		{
-			$this->profiler()->timer('domainCheck')->stop();
+			$this->profiler()->stopTimer('domainCheck');
 			return false;
 		}
 
@@ -198,7 +195,7 @@ class Router extends nComponent
 			$expectedPart = $expectedParts[$idx];
 			if ($expectedPart != '*' && $domainPart != $expectedPart)
 			{
-				$this->profiler()->timer('domainCheck')->stop();
+				$this->profiler()->stopTimer('domainCheck');
 				return false;
 			}
 		}
@@ -207,7 +204,7 @@ class Router extends nComponent
 	}
 
 	/**
-	 * Creates a regex pattern from a mapped url. Used for matching url -> mapped url matching.
+	 * Creates a regex pattern from a mapped url. Used for matching url -> mapped url.
 	 *
 	 * @param string $mappedUrl
 	 * @return string
@@ -218,18 +215,26 @@ class Router extends nComponent
 			return '#^/$#';
 
 		$this->profiler()->createTimer('createRegexFromMappedUrl');
-		$regex = '/^';
+		// we check if there is only one uri part cause we can get some performance improvement this way
+		if (strpos($mappedUrl, '/') === false)
+		{
+			$this->profiler()->stopTimer('createRegexFromMappedUrl');
+			return "/^{$mappedUrl}\$/";
+		}
+
 		$parts = explode('/', $mappedUrl);
+		$regex = '/^';
 		foreach ($parts as $idx => $part)
 		{
 			$regex .= !$idx ? '' : '\/';
-			if (preg_match('/{[a-zA-Z0-9]+\|.+}/', $part))
-				$regex .= '(' . preg_replace('/{([a-zA-Z0-9]+)\|(.+)}/', '$2', $part) . ')';
+			// if regex pattern is specified in part
+			if (preg_match('/{[^\|]+?\|.+}/', $part))
+				$regex .= '(' . preg_replace('/{([^\|]+?)\|(.+?)}/', '$2', $part) . ')';
 			else
 				$regex .= $part;
 		}
 
-		$this->profiler()->timer('createRegexFromMappedUrl')->stop();
+		$this->profiler()->stopTimer('createRegexFromMappedUrl');
 		return $regex . '$/';
 	}
 
@@ -265,12 +270,12 @@ class Router extends nComponent
 		if (isset($route->sameAs) && isset($this->_routes[$route->sameAs]))
 		{
 			$this->_routes[$routeName] = $this->_routes[$route->sameAs];
-			$this->profiler()->timer('addRoute')->stop();
+			$this->profiler()->stopTimer('addRoute');
 			return;
 		}
 
 		$this->_routes[$routeName] = $route;
-		$this->profiler()->timer('addRoute')->stop();
+		$this->profiler()->stopTimer('addRoute');
 	}
 
 	/**
@@ -283,7 +288,7 @@ class Router extends nComponent
 		$this->profiler()->createTimer('addRoutes');
 		foreach ($routes as $url => $route)
 			$this->addRoute($url, $route);
-		$this->profiler()->timer('addRoutes')->stop();
+		$this->profiler()->stopTimer('addRoutes');
 	}
 
 	/**

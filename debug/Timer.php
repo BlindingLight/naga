@@ -124,7 +124,7 @@ class Timer extends nComponent implements iTimer
 			return $this;
 
 		$this->createTimeEntry(self::Start);
-		$this->setState(self::Running);
+		$this->_state = self::Running;
 
 		return $this;
 	}
@@ -140,7 +140,7 @@ class Timer extends nComponent implements iTimer
 			return $this;
 
 		$this->createTimeEntry(self::Stop);
-		$this->setState(self::Stopped);
+		$this->_state = self::Stopped;
 
 		return $this;
 	}
@@ -156,7 +156,7 @@ class Timer extends nComponent implements iTimer
 			return $this;
 
 		$this->createTimeEntry(self::Pause);
-		$this->setState(self::Paused);
+		$this->_state = self::Paused;
 
 		return $this;
 	}
@@ -190,11 +190,11 @@ class Timer extends nComponent implements iTimer
 	 */
 	protected function createTimeEntry($type)
 	{
-		if (!in_array($type, array(self::Start, self::Stop, self::Pause)))
+		if ($type != self::Start && $type != self::Stop && $type != self::Pause)
 			throw new \Exception("Invalid Timer time entry type specified: {$type}");
 
 		$this->_times[] = (object)array(
-			'type' => (int)$type,
+			'type' => $type,
 			'time' => microtime(true)
 		);
 
@@ -210,11 +210,22 @@ class Timer extends nComponent implements iTimer
 	 */
 	protected function setState($state)
 	{
-		if (!in_array($state, array(self::Running, self::Paused, self::Stopped)))
+		if ($state != self::Running && $state != self::Stopped && $state != self::Paused)
 			throw new \Exception("Invalid Timer state specified: {$state}");
 
 		$this->_state = (int)$state;
 
 		return $this;
+	}
+
+	/**
+	 * Resets the timer. Returns with iTimer instance for chainability
+	 *
+	 * @return iTimer
+	 */
+	public function reset()
+	{
+		$this->_state = self::Stopped;
+		$this->_times = array();
 	}
 }

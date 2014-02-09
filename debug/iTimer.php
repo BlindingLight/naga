@@ -5,8 +5,7 @@ namespace Naga\Core\Debug;
 interface iTimer
 {
 	/**
-	 * Gets timer result in specified time measurement. If $measure = Timer::Dynamic, result is returned as
-	 * a string with the biggest possible measure that have value bigger or equal to 1.
+	 * Gets timer result in specified time measurement.
 	 *
 	 * @param   int             $measure    time measure
 	 * @param   int             $roundPrecision  round precision
@@ -34,6 +33,13 @@ interface iTimer
 	 * @return iTimer
 	 */
 	public function pause();
+
+	/**
+	 * Resets the timer. Returns with iTimer instance for chainability
+	 *
+	 * @return iTimer
+	 */
+	public function reset();
 
 	/**
 	 * Gets timer name.

@@ -24,41 +24,36 @@ abstract class nComponent
 	/**
 	 * @var array registered components
 	 */
-
 	private $_components = array();
-	/**
-	 * @var iProfiler[] profiler instances
-	 */
-	private $_profilers = array();
 
 	/**
-	 * Gets a profiler instance with the specified name. If Profiler instance doesn't exist,
-	 * creates one and returns that.
+	 * @var iProfiler iProfiler instance
+	 */
+	private $_profiler;
+
+	/**
+	 * Gets the component's iProfiler instance. If iProfiler instance doesn't exist,
+	 * creates it and returns that.
 	 *
-	 * @param string $name
 	 * @return iProfiler
 	 */
-	public function profiler($name = 'class')
+	public function profiler()
 	{
-		if (!array_key_exists($name, $this->_profilers))
-			$this->_profilers[$name] = new Profiler($name);
+		if (empty($this->_profiler))
+			$this->_profiler = new Profiler('class');
 
-		return $this->_profilers[$name];
+		return $this->_profiler;
 	}
 
 	/**
-	 * Adds an iProfiler instance. This way you can register your implementation of iProfiler
+	 * Sets the iProfiler instance. This way you can register your implementation of iProfiler
 	 * interface.
 	 *
-	 * @param   string  $name
 	 * @param iProfiler $profiler
 	 */
-	public function addProfiler($name, iProfiler $profiler)
+	public function addProfiler(iProfiler $profiler)
 	{
-		if (array_key_exists($name, $this->_profilers))
-			trigger_error("Overwriting Profiler instance with name {$name} in class " . __CLASS__);
-
-		$this->_profilers[$name] = $profiler;
+		$this->_profiler = $profiler;
 	}
 
 	/**
@@ -72,11 +67,11 @@ abstract class nComponent
 	public function registerComponent($name, $component)
 	{
 		if (isset($this->_components[$name]))
-			throw new Exception\ComponentAlreadyRegisteredException("Component $name already registered.");
+			throw new Exception\ComponentAlreadyRegisteredException("Component {$name} already registered.");
 
 		if (!($component instanceof nComponent) && !is_callable($component))
 		{
-			throw new Exception\ComponentInvalidException("Can't register invalid component $name ("
+			throw new Exception\ComponentInvalidException("Can't register invalid component {$name} ("
 				. gettype($component) . "), must be inherited from nComponent or \\Callable.");
 		}
 
