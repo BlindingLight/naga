@@ -2,11 +2,13 @@
 
 namespace Naga\Core;
 
+use Naga\Core\Debug\Profiler;
+use Naga\Core\Debug\iProfiler;
 use Naga\Core\Exception;
 
 /**
  * Class nComponent
- * Base class for ALL of the classes in yayframework. It provides basic component versioning
+ * Base class for ALL of the classes in Naga. It provides basic profiling, component versioning
  * and registering.
  *
  * @package Naga\Core
@@ -14,8 +16,50 @@ use Naga\Core\Exception;
  */
 abstract class nComponent
 {
+	/**
+	 * @var float component version
+	 */
 	protected static $_componentVersion = 1.0;
+
+	/**
+	 * @var array registered components
+	 */
+
 	private $_components = array();
+	/**
+	 * @var iProfiler[] profiler instances
+	 */
+	private $_profilers = array();
+
+	/**
+	 * Gets a profiler instance with the specified name. If Profiler instance doesn't exist,
+	 * creates one and returns that.
+	 *
+	 * @param string $name
+	 * @return iProfiler
+	 */
+	public function profiler($name = 'class')
+	{
+		if (!array_key_exists($name, $this->_profilers))
+			$this->_profilers[$name] = new Profiler($name);
+
+		return $this->_profilers[$name];
+	}
+
+	/**
+	 * Adds an iProfiler instance. This way you can register your implementation of iProfiler
+	 * interface.
+	 *
+	 * @param   string  $name
+	 * @param iProfiler $profiler
+	 */
+	public function addProfiler($name, iProfiler $profiler)
+	{
+		if (array_key_exists($name, $this->_profilers))
+			trigger_error("Overwriting Profiler instance with name {$name} in class " . __CLASS__);
+
+		$this->_profilers[$name] = $profiler;
+	}
 
 	/**
 	 * Registers a component.
