@@ -73,6 +73,8 @@ class Router extends nComponent
 	 */
 	public function routeUri()
 	{
+		$this->profiler()->createTimer('routeUri');
+
 		$route = $this->matchUri($this->request()->uri());
 		$route->parameters = $this->getParameters($this->_matchedMappedUrl, $route->parameters);
 		$route->method = $this->request()->httpMethodString();
@@ -81,20 +83,28 @@ class Router extends nComponent
 			$route->method = 'get';
 
 		if (!isset($route->{$route->method}))
+		{
+			$this->profiler()->timer('routeUri')->stop();
 			throw new Exception\ConfigException("Badly configured route, missing 'get'.");
+		}
 
 		if (is_callable($route->{$route->method}))
+		{
+			$this->profiler()->timer('routeUri')->stop();
 			return call_user_func_array($route->{$route->method}, $route->parameters);
+		}
 		else
 		{
 			list($className, $methodName) = explode('@', $route->{$route->method});
 			try
 			{
 				$controller = new $className();
+				$this->profiler()->timer('routeUri')->stop();
 				return $controller->{$methodName}($route->parameters);
 			}
 			catch (\Exception $e)
 			{
+				$this->profiler()->timer('routeUri')->stop();
 				return $route->{$route->method} . ":\n" . $e->getMessage();
 			}
 		}
@@ -112,6 +122,7 @@ class Router extends nComponent
 		if (!$mappedUrl || $mappedUrl == '/')
 			return array();
 
+		$this->profiler()->createTimer('getParameters');
 		$parts = explode('/', $mappedUrl);
 		$finalized = array();
 		foreach ($parts as $part)
@@ -120,6 +131,7 @@ class Router extends nComponent
 				$finalized[preg_replace('/{([a-zA-Z0-9]+)\|(.+)}/', '$1', $part)] = array_shift($parameters);
 		}
 
+		$this->profiler()->timer('getParameters')->stop();
 		return $finalized;
 	}
 
@@ -131,6 +143,7 @@ class Router extends nComponent
 	 */
 	protected function matchUri($uri)
 	{
+		$this->profiler()->createTimer('matchUri');
 		$uri = $uri != '/' ? trim($uri, '/') : $uri;
 		foreach ($this->_urlMappings as $mappedUrl => $routeName)
 		{
@@ -150,12 +163,14 @@ class Router extends nComponent
 
 				$this->_routes[$routeName]->parameters = array_splice($matches, 1, count($matches) - 1);
 				$this->_matchedMappedUrl = $mappedUrl;
+				$this->profiler()->timer('matchUri')->stop();
 				return $this->_routes[$routeName];
 			}
 		}
 
 		$route = $this->_routes[$this->defaultRouteName()];
 		$route->parameters = array();
+		$this->profiler()->timer('matchUri')->stop();
 		return $route;
 	}
 
@@ -168,17 +183,24 @@ class Router extends nComponent
 	 */
 	protected function domainCheck($domain, $expected)
 	{
+		$this->profiler()->createTimer('domainCheck');
 		$domainParts = explode('.', $domain);
 		$expectedParts = explode('.', $expected);
 
 		if (count($domainParts) != count($expectedParts))
+		{
+			$this->profiler()->timer('domainCheck')->stop();
 			return false;
+		}
 
 		foreach ($domainParts as $idx => $domainPart)
 		{
 			$expectedPart = $expectedParts[$idx];
 			if ($expectedPart != '*' && $domainPart != $expectedPart)
+			{
+				$this->profiler()->timer('domainCheck')->stop();
 				return false;
+			}
 		}
 
 		return true;
@@ -195,6 +217,7 @@ class Router extends nComponent
 		if (!$mappedUrl || $mappedUrl == '/')
 			return '#^/$#';
 
+		$this->profiler()->createTimer('createRegexFromMappedUrl');
 		$regex = '/^';
 		$parts = explode('/', $mappedUrl);
 		foreach ($parts as $idx => $part)
@@ -206,6 +229,7 @@ class Router extends nComponent
 				$regex .= $part;
 		}
 
+		$this->profiler()->timer('createRegexFromMappedUrl')->stop();
 		return $regex . '$/';
 	}
 
@@ -221,6 +245,7 @@ class Router extends nComponent
 		if (isset($this->_routes[$mappedUrl]))
 			throw new Exception\ConfigException("Can't add route '$mappedUrl', already exists.");
 
+		$this->profiler()->createTimer('addRoute');
 		$route = (object)$route;
 		foreach ($this->request()->httpMethodList() as $method)
 		{
@@ -240,10 +265,12 @@ class Router extends nComponent
 		if (isset($route->sameAs) && isset($this->_routes[$route->sameAs]))
 		{
 			$this->_routes[$routeName] = $this->_routes[$route->sameAs];
+			$this->profiler()->timer('addRoute')->stop();
 			return;
 		}
 
 		$this->_routes[$routeName] = $route;
+		$this->profiler()->timer('addRoute')->stop();
 	}
 
 	/**
@@ -253,8 +280,10 @@ class Router extends nComponent
 	 */
 	public function addRoutes(array $routes)
 	{
+		$this->profiler()->createTimer('addRoutes');
 		foreach ($routes as $url => $route)
 			$this->addRoute($url, $route);
+		$this->profiler()->timer('addRoutes')->stop();
 	}
 
 	/**

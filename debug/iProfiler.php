@@ -16,8 +16,24 @@ interface iProfiler
 	 * Gets a Timer instance with the specified name.
 	 *
 	 * @param   string  $name
-	 * @return  Timer
+	 * @return  iTimer
 	 * @throws  \Exception
 	 */
 	public function timer($name);
+
+	/**
+	 * Gets all iTimer instances in an array.
+	 *
+	 * @return iTimer[]
+	 */
+	public function timers();
+
+	/**
+	 * Gets all iTimer results in an array.
+	 *
+	 * @param int $measure
+	 * @param int $roundPrecision
+	 * @return array
+	 */
+	public function timerResults($measure = 1, $roundPrecision = 4);
 }

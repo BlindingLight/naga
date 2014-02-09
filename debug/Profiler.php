@@ -59,4 +59,30 @@ class Profiler extends nComponent implements iProfiler
 
 		return $this->_timers[$name];
 	}
+
+	/**
+	 * Gets all Timer instances in an array.
+	 *
+	 * @return Timer[]
+	 */
+	public function timers()
+	{
+		return $this->_timers;
+	}
+
+	/**
+	 * Gets all iTimer results in an array.
+	 *
+	 * @param int $measure
+	 * @param int $roundPrecision
+	 * @return array
+	 */
+	public function timerResults($measure = Timer::Dynamic, $roundPrecision = 4)
+	{
+		$results = array();
+		foreach ($this->_timers as $timer)
+			$results[$timer->name()] = $timer->result($measure, $roundPrecision);
+
+		return $results;
+	}
 }
