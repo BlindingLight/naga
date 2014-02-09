@@ -83,6 +83,6 @@ class Cookie extends nComponent
 	 */
 	public function exists($name)
 	{
-		return isset($_COOKIE[$name]) || array_key_exists($name, $_COOKIE);
+		return isset($_COOKIE[$name]);
 	}
 }

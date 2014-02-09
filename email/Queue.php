@@ -27,7 +27,7 @@ class Queue extends nComponent
 		foreach ($items as $item)
 		{
 			// trying to get sender data, if not exists, skipping
-			if (!array_key_exists($item->senderEmail, $this->_senderConfigs) && !array_key_exists('default', $this->_senderConfigs))
+			if (!isset($this->_senderConfigs[$item->senderEmail]) && !isset($this->_senderConfigs['default']))
 			{
 				$this->storage()->updateLastTry($item->messageHash);
 				continue;

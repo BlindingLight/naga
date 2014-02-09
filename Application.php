@@ -54,7 +54,7 @@ abstract class Application extends nComponent
 	public static function registerInstance(Application $instance, $name = null)
 	{
 		$name = $name ? $name : $instance->instanceName();
-		if (array_key_exists($name, self::$_instances))
+		if (isset(self::$_instances[$name]))
 			throw new \Exception("Can't register instance with name {$name}, name taken.");
 
 		self::$_instances[$name] = $instance;
@@ -71,7 +71,7 @@ abstract class Application extends nComponent
 	public static function instance($name = null)
 	{
 		$name = $name ? $name : self::$_defaultInstanceName;
-		if (!array_key_exists($name, self::$_instances))
+		if (!isset(self::$_instances[$name]))
 			throw new \Exception("Can't get Application instance with name {$name}.");
 
 		return self::$_instances[$name];

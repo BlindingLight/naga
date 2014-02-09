@@ -62,6 +62,6 @@ abstract class Model extends nComponent
 
 	public function __isset($property)
 	{
-	  	return array_key_exists($property, $this->_data) || isset($this->_fieldMap[$property]);
+	  	return isset($this->_data[$property]) || isset($this->_fieldMap[$property]);
 	}
 }

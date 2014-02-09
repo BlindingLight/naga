@@ -45,7 +45,7 @@ class Validator extends nComponent
 	 */
 	public function addRule($name, Callable $callback, $defaultMessage = '')
 	{
-		if (array_key_exists($name, $this->_rules))
+		if (isset($this->_rules[$name]))
 			throw new \Exception("Can't add {$name} validation rule, there is already on with this name.");
 
 		$this->_rules[$name] = new Rule(
@@ -64,7 +64,7 @@ class Validator extends nComponent
 	 */
 	public function rule($name)
 	{
-		if (!array_key_exists($name, $this->_rules))
+		if (!isset($this->_rules[$name]))
 			throw new \Exception("Can't get rule with name {$name}, doesn't exist.");
 
 		return $this->_rules[$name];
@@ -159,7 +159,7 @@ class Validator extends nComponent
 			$realKey = $params[0];
 
 			// skipping if rule doesn't exist
-			if (!array_key_exists($realKey, $this->_rules))
+			if (!isset($this->_rules[$realKey]))
 				continue;
 
 			// removing rule key
@@ -203,18 +203,18 @@ class Validator extends nComponent
 	 */
 	public function validateOne($dataKey, ValidationResult &$validationResult)
 	{
-		if (!array_key_exists($dataKey, $this->_dataValidationMap))
+		if (!isset($this->_dataValidationMap[$dataKey]))
 			return;
 
 		$rules = $this->_dataValidationMap[$dataKey];
 
 		foreach ($rules as $rule)
 		{
-			if (!array_key_exists($rule->name, $this->_rules))
+			if (!isset($this->_rules[$rule->name]))
 				return;
 
 			// getting data
-			$data = array_key_exists($dataKey, $this->_data) ? $this->_data[$dataKey] : null;
+			$data = isset($this->_data[$dataKey]) ? $this->_data[$dataKey] : null;
 			$errors = array();
 			$params = array_merge(array($data, &$errors), $rule->params);
 			$valid = call_user_func_array(
@@ -237,7 +237,7 @@ class Validator extends nComponent
 	 */
 	protected function createMessage($ruleKey, array $errors)
 	{
-		if (!array_key_exists($ruleKey, $this->_rules))
+		if (!isset($this->_rules[$ruleKey]))
 			return '';
 
 		// fix for non-string values

@@ -56,7 +56,7 @@ class Email extends nComponent
 		if (!$name)
 			return $this->defaultConnection();
 
-		if (!array_key_exists($name, $this->_connections))
+		if (!isset($this->_connections[$name]))
 			throw new EmailException("Can't get email connection {$name}, doesn't exist.");
 
 		return $this->_connections[$name];

@@ -201,7 +201,7 @@ class Input extends nComponent
 		$args = func_get_args();
 		foreach ($args as $key)
 		{
-			if (isset($items[$key]) || array_key_exists($key, $items))
+			if (isset($items[$key]))
 				unset($items[$key]);
 		}
 
@@ -246,8 +246,7 @@ class Input extends nComponent
 	 */
 	public function exists($name)
 	{
-		return array_key_exists($name, $_REQUEST) || isset($_REQUEST[$name])
-			|| array_key_exists($name, $this->_tempContainer) || isset($this->_tempContainer[$name]);
+		return isset($_REQUEST[$name]) || isset($this->_tempContainer[$name]);
 	}
 
 	/**
@@ -381,14 +380,14 @@ class Input extends nComponent
 	{
 		if ($tempStore)
 		{
-			if (array_key_exists($name, $this->_tempContainer))
+			if (isset($this->_tempContainer[$name]))
 				throw new \Exception("Can't store input item, already exists in temporary container.");
 			else
 				$this->_tempContainer[$name] = $value;
 		}
 		else
 		{
-			if (array_key_exists($name, $_REQUEST))
+			if (isset($_REQUEST[$name]))
 				throw new \Exception('Can\'t store input item, already exists in $_REQUEST.');
 			else
 				$this->_tempContainer[$name] = $value;

@@ -77,7 +77,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 		if ($this->_readOnly)
 			throw new CollectionException("Can't remove item from a read-only map.");
 
-		if (isset($this->_data[$key]) || array_key_exists($key, $this->_data))
+		if (isset($this->_data[$key]))
 			unset($this->_data[$key]);
 
 		return $this;
@@ -118,7 +118,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	 */
 	public function contains($key)
 	{
-		return isset($this->_data[$key]) || array_key_exists($key, $this->_data);
+		return isset($this->_data[$key]);
 	}
 
 	/**

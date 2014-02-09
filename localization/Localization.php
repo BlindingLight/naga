@@ -57,7 +57,7 @@ class Localization extends nComponent
 	 */
 	public function setCurrentLanguage($languageId)
 	{
-		if (!array_key_exists($languageId, $this->_languages))
+		if (!isset($this->_languages[$languageId]))
 			throw new Exception\LocalizationException("Can't set current language to {$languageId}, doesn't exist.");
 
 		$this->_currentLanguageId = $languageId;
@@ -71,7 +71,7 @@ class Localization extends nComponent
 	 */
 	public function setDefaultLanguage($languageId)
 	{
-		if (!array_key_exists($languageId, $this->_languages))
+		if (!isset($this->_languages[$languageId]))
 			throw new Exception\LocalizationException("Can't set default language to {$languageId}, doesn't exist.");
 
 		$this->_defaultLanguageId = $languageId;
@@ -87,7 +87,7 @@ class Localization extends nComponent
 	 */
 	public function currentLanguage()
 	{
-		if (!array_key_exists($this->_currentLanguageId, $this->_languages))
+		if (!isset($this->_languages[$this->_currentLanguageId]))
 			throw new Exception\LocalizationException("Can't get current language with id {$this->_currentLanguageId}, doesn't exist.");
 
 		return $this->_languages[$this->_currentLanguageId];
@@ -102,7 +102,7 @@ class Localization extends nComponent
 	 */
 	public function language($languageId)
 	{
-		if (!array_key_exists($languageId, $this->_languages))
+		if (!isset($this->_languages[$languageId]))
 			throw new Exception\LocalizationException("Can't get language with id {$languageId}, doesn't exist.");
 
 		return $this->_languages[$languageId];

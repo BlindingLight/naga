@@ -43,7 +43,7 @@ class ValidationResult extends nComponent
 		}
 
 		// if $dataKey specified, we check that we have status for it
-		if (!array_key_exists($dataKey, $this->_dataStatuses))
+		if (!isset($this->_dataStatuses[$dataKey]))
 			return false;
 
 		// return the status we found
@@ -86,14 +86,14 @@ class ValidationResult extends nComponent
 			{
 				// getting displayable name
 				$displayableName = $status->key;
-				if (is_array($displayableNames) && array_key_exists($status->key, $displayableNames))
+				if (is_array($displayableNames) && isset($displayableNames[$status->key]))
 					$displayableName = $displayableNames[$status->key];
 				else if (is_string($displayableNames))
 					$displayableName = $displayableNames;
 
 				if (count($status->messages))
 				{
-					if (!array_key_exists($status->key, $messages))
+					if (!isset($messages[$status->key]))
 						$messages[$status->key] = array();
 
 					foreach ($status->messages as $message)
@@ -105,12 +105,12 @@ class ValidationResult extends nComponent
 		}
 
 		// if $dataKey specified, we return messages of it
-		if (!array_key_exists($dataKey, $this->_dataStatuses))
+		if (!isset($this->_dataStatuses[$dataKey]))
 			return array();
 
 		// getting displayable name
 		$displayableName = $dataKey;
-		if (is_array($displayableNames) && array_key_exists($dataKey, $displayableNames))
+		if (is_array($displayableNames) && isset($displayableNames[$dataKey]))
 			$displayableName = $displayableNames[$dataKey];
 		else if (is_string($displayableNames))
 			$displayableName = $displayableNames;
@@ -161,7 +161,7 @@ class ValidationResult extends nComponent
 		}
 
 		// if there is no data with $dataKey, we return an empty array
-		if (!array_key_exists($dataKey, $this->_dataStatuses))
+		if (!isset($this->_dataStatuses[$dataKey]))
 			return array();
 
 		// return errors
@@ -180,7 +180,7 @@ class ValidationResult extends nComponent
 	 */
 	public function addStatus($ruleKey, $dataKey, $valid, $errors = array(), $message = '')
 	{
-		if (!array_key_exists($dataKey, $this->_dataStatuses))
+		if (!isset($this->_dataStatuses[$dataKey]))
 		{
 			$this->_dataStatuses[$dataKey] = (object)array(
 				'key' => $dataKey,
