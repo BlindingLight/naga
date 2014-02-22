@@ -6,14 +6,22 @@ use Naga\Core\Response\HtmlResponse;
 use Naga\Core\Response\JsonResponse;
 use Naga\Core\Response\Response;
 use Naga\Core\View\Template\iTemplate;
+use Naga\Core\View\Template\TwigTemplate;
 use Naga\Core\nComponent;
 
+/**
+ * Base class for views.
+ *
+ * @package Naga\Core\View
+ * @author  BlindingLight<bloodredshade@gmail.com>
+ */
 class View extends nComponent
 {
 	/**
-	 * @var \Naga\Core\View\Template\iTemplate
+	 * @var \Naga\Core\View\Template\iTemplate|\Naga\Core\View\Template\TwigTemplate
 	 */
 	private $_template;
+
 	/**
 	 * @var \Naga\Core\Response\Response|\Naga\Core\Response\HtmlResponse|\Naga\Core\Response\JsonResponse
 	 */
@@ -32,6 +40,9 @@ class View extends nComponent
 			$this->setTemplate($template);
 	}
 
+	/**
+	 * Executes view.
+	 */
 	public function execute()
 	{
 		if ($this->template() && $this->_response instanceof HtmlResponse)
@@ -75,7 +86,7 @@ class View extends nComponent
 	/**
 	 * Gets the view's template instance.
 	 *
-	 * @return iTemplate
+	 * @return iTemplate|TwigTemplate
 	 */
 	public function template()
 	{
