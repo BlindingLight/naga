@@ -13,24 +13,52 @@ use Naga\Core\nComponent;
  */
 abstract class Action extends nComponent
 {
+	/**
+	 * @var array action parameters from controller
+	 */
 	private $_params = array();
+	/**
+	 * @var View View instance
+	 */
 	private $_view;
 
+	/**
+	 * Construct.
+	 *
+	 * @param array $params
+	 */
 	public function __construct(array $params)
 	{
 		$this->_params = $params;
 	}
 
+	/**
+	 * Gets a parameter.
+	 *
+	 * @param $name
+	 * @return null|mixed
+	 */
 	public function get($name)
 	{
 		return isset($this->_params[$name]) ? $this->_params[$name] : null;
 	}
 
+	/**
+	 * Sets a parameter.
+	 *
+	 * @param string $name
+	 * @param mixed $value
+	 */
 	public function set($name, $value)
 	{
 		$this->_params[$name] = $value;
 	}
 
+	/**
+	 * Sets the View instance.
+	 *
+	 * @param View $view
+	 */
 	public function setView(View $view)
 	{
 		$this->_view = $view;

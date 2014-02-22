@@ -2,16 +2,16 @@
 
 namespace Naga\Core\Model;
 
+use Naga\Core\Collection\Map;
 use Naga\Core\Database\Connection\CacheableDatabaseConnection;
-use Naga\Core\nComponent;
 
 /**
  * Abstract class for creating models.
  *
  * @package Naga\Core\Model
- * @author  BlindingLight <bloodredshade@gmail.com>
+ * @author  BlindingLight<bloodredshade@gmail.com>
  */
-abstract class Model extends nComponent
+abstract class Model extends Map
 {
 	/**
 	 * @var array internal data storage

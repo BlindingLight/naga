@@ -78,7 +78,7 @@ class DatabaseManager extends nComponent
 
 			return $this->component('connection_' . $name);
 		}
-		catch (Exception\ComponentNotFoundException $e)
+		catch (Exception\NotFoundException $e)
 		{
 			throw new Exception\DatabaseException("Connection {$name} not found.");
 		}

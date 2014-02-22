@@ -14,7 +14,7 @@ use Naga\Core\Exception;
  * @package Naga\Core
  * @author BlindingLight<bloodredshade@gmail.com>
  */
-abstract class nComponent
+abstract class nComponent implements iComponent
 {
 	/**
 	 * @var float component version
@@ -60,19 +60,19 @@ abstract class nComponent
 	 * Registers a component.
 	 *
 	 * @param string $name
-	 * @param callable|nComponent $component component must by callable or child of nComponent
-	 * @throws Exception\ComponentAlreadyRegisteredException
-	 * @throws Exception\ComponentInvalidException
+	 * @param callable|nComponent|iComponent $component component must by callable or child of nComponent
+	 * @throws Exception\Component\AlreadyRegisteredException
+	 * @throws Exception\Component\InvalidException
 	 */
 	public function registerComponent($name, $component)
 	{
 		if (isset($this->_components[$name]))
-			throw new Exception\ComponentAlreadyRegisteredException("Component {$name} already registered.");
+			throw new Exception\Component\AlreadyRegisteredException("Component {$name} already registered.");
 
-		if (!($component instanceof nComponent) && !is_callable($component))
+		if (!($component instanceof nComponent) && !($component instanceof iComponent) && !is_callable($component))
 		{
-			throw new Exception\ComponentInvalidException("Can't register invalid component {$name} ("
-				. gettype($component) . "), must be inherited from nComponent or \\Callable.");
+			throw new Exception\Component\InvalidException("Can't register invalid component {$name} ("
+				. gettype($component) . "), must be inherited from nComponent, implementing iComponent or be a \\Callable.");
 		}
 
 		$this->_components[$name] = $component;
@@ -93,13 +93,13 @@ abstract class nComponent
 	 * Gets a component.
 	 *
 	 * @param $name
-	 * @return nComponent|\Closure
-	 * @throws Exception\ComponentNotFoundException
+	 * @return nComponent|\Closure|iComponent
+	 * @throws Exception\Component\NotFoundException
 	 */
 	public function component($name)
 	{
 		if (!isset($this->_components[$name]))
-			throw new Exception\ComponentNotFoundException("Component $name not found.");
+			throw new Exception\Component\NotFoundException("Component $name not found.");
 
 		return $this->_components[$name];
 	}

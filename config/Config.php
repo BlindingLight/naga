@@ -2,15 +2,15 @@
 
 namespace Naga\Core\Config;
 
-use Naga\Core\Exception\ConfigException;
+use Naga\Core\Exception\Config\NotExistsException;
 use Naga\Core\FileSystem\iFileSystem;
 use Naga\Core\nComponent;
 
 /**
  * Helper class for managing configurations.
  *
- * @author BlindingLight<bloodredshade@gmail.com>
  * @package Naga\Core\Config
+ * @author BlindingLight<bloodredshade@gmail.com>
  */
 class Config extends nComponent
 {
@@ -28,9 +28,9 @@ class Config extends nComponent
 	/**
 	 * Adds a ConfigBag.
 	 *
-	 * @param $name
+	 * @param string $name
 	 * @param ConfigBag $config
-	 * @return \Naga\Core\Config\Config
+	 * @return $this
 	 */
 	public function add($name, ConfigBag $config)
 	{
@@ -42,7 +42,7 @@ class Config extends nComponent
 	 * Returns the ConfigBag instance with the specified name if Config called as a function.
 	 * Example: $app->config('application')
 	 *
-	 * @param $name
+	 * @param string $name
 	 * @return \Naga\Core\Config\ConfigBag
 	 */
 	public function __invoke($name)
@@ -54,7 +54,7 @@ class Config extends nComponent
 	 * Returns the ConfigBag instance with the specified name if accessed like a property.
 	 * Example: $app->config->application
 	 *
-	 * @param $name
+	 * @param string $name
 	 * @return \Naga\Core\Config\ConfigBag
 	 */
 	public function __get($name)
@@ -123,7 +123,7 @@ class Config extends nComponent
 	 *
 	 * @param $name
 	 * @return callable|nComponent
-	 * @throws \Naga\Core\Exception\ConfigException
+	 * @throws NotExistsException
 	 */
 	public function getConfigBag($name)
 	{
@@ -133,7 +133,7 @@ class Config extends nComponent
 		}
 		catch (\Exception $e)
 		{
-			throw new ConfigException("Can't get config with name '{$name}'.");
+			throw new NotExistsException("Can't get config with name '{$name}'.");
 		}
 	}
 

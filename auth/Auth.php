@@ -3,6 +3,7 @@
 namespace Naga\Core\Auth;
 
 use Naga\Core\Exception;
+use Naga\Core\Exception\Auth\DataCorruptedException;
 use Naga\Core\Session\Storage\iSessionStorage;
 use Naga\Core\nComponent;
 
@@ -15,7 +16,7 @@ use Naga\Core\nComponent;
 class Auth extends nComponent
 {
 	/**
-	 * @var array
+	 * @var AuthUser[]
 	 */
 	private $_loggedInInstances = array();
 	/**
@@ -24,9 +25,10 @@ class Auth extends nComponent
 	private $_defaultUserId;
 
 	/**
-	 * Construct. Creates User instances from session data.
+	 * Construct. Creates AuthUser instances from session data.
 	 *
 	 * @param iSessionStorage $session
+	 * @throws DataCorruptedException
 	 */
 	public function __construct(iSessionStorage $session)
 	{
@@ -36,42 +38,40 @@ class Auth extends nComponent
 			return;
 
 		if (!is_array($users))
-			throw new Exception\AuthException('Auth init failed: corrupted session data.');
+			throw new DataCorruptedException('Auth init failed: corrupted session data.');
 
 		foreach ($users as $id => $user)
 		{
-			$instance = new User($id);
+			$instance = new AuthUser($id);
 			$instance->mergeWith($user['data']);
 			$this->addUserInstance($instance, $user['isDefault']);
 		}
 	}
 
 	/**
-	 * Gets the User instance of user $id.
+	 * Gets the AuthUser instance of user $id.
 	 *
 	 * @param mixed $id
-	 * @return User
+	 * @return AuthUser
 	 * @throws \Naga\Core\Exception\AuthException
 	 */
 	public function user($id = 0)
 	{
 		if (!$id)
-			$user = $this->defaultUser();
+			return $this->defaultUser();
 		else
 		{
 			if (!isset($this->_loggedInInstances[$id]))
 				throw new Exception\AuthException("Can't get user with id {$id}.");
 
-			$user = $this->_loggedInInstances[$id];
+			return $this->_loggedInInstances[$id];
 		}
-
-		return $user;
 	}
 
 	/**
 	 * Gets the default user instance.
 	 *
-	 * @return User
+	 * @return AuthUser
 	 */
 	public function defaultUser()
 	{
@@ -97,11 +97,11 @@ class Auth extends nComponent
 	 */
 	public function isLoggedIn()
 	{
-		return count($this->_loggedInInstances) > 0;
+		return isset($this->_loggedInInstances[0]);
 	}
 
 	/**
-	 * Creates a User instance with the specified data. You can use $condition for special condition(s),
+	 * Creates an AuthUser instance with the specified data. You can use $condition for special condition(s),
 	 * like user is trying to login from a trusted device or not, etc.
 	 * Example:
 	 * Auth->loginAs(1, array('username' => 'Somebody'), isset($trustedDevices[$userDevice]), true)
@@ -117,7 +117,7 @@ class Auth extends nComponent
 		if (!$condition)
 			return false;
 
-		$user = new User($id);
+		$user = new AuthUser($id);
 		$user->mergeWith($data);
 		$this->addUserInstance($user, $setDefault);
 
@@ -148,8 +148,10 @@ class Auth extends nComponent
 		if ($this->_defaultUserId === $id)
 		{
 			$ids = array_keys($this->_loggedInInstances);
-			if (count($ids))
+			if (isset($ids[0]))
 				$this->_defaultUserId = $ids[0];
+			else
+				$this->_defaultUserId = null;
 		}
 		$this->storeSessionData();
 	}
@@ -157,10 +159,10 @@ class Auth extends nComponent
 	/**
 	 * Adds an initialized user instance.
 	 *
-	 * @param User $user
+	 * @param AuthUser $user
 	 * @param bool $setDefault
 	 */
-	public function addUserInstance(User $user, $setDefault = false)
+	public function addUserInstance(AuthUser $user, $setDefault = false)
 	{
 		$this->_loggedInInstances[$user->id()] = $user;
 		if ($setDefault)

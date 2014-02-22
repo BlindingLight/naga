@@ -12,16 +12,16 @@ use Naga\Core\nComponent;
  */
 class SimpleListIterator extends nComponent implements \Iterator
 {
-	protected static $_componentVersion = 1.0;
-
 	/**
 	 * @var array iterable data
 	 */
 	private $_data;
+
 	/**
-	 * @var array list length
+	 * @var int list length
 	 */
 	private $_length;
+
 	/**
 	 * @var mixed current key
 	 */
@@ -72,13 +72,13 @@ class SimpleListIterator extends nComponent implements \Iterator
 	 */
 	public function next()
 	{
-		$this->_currentKey++;
+		++$this->_currentKey;
 	}
 
 	/**
 	 * Returns whether there is an element at current position.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function valid()
 	{

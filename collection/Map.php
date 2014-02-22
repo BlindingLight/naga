@@ -2,7 +2,8 @@
 
 namespace Naga\Core\Collection;
 
-use Naga\Core\Exception\CollectionException;
+use Naga\Core\Exception\Collection\InvalidSourceException;
+use Naga\Core\Exception\Collection\ReadOnlyException;
 use Naga\Core\nComponent;
 
 /**
@@ -13,12 +14,11 @@ use Naga\Core\nComponent;
  */
 class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	protected static $_componentVersion = 1.0;
-
 	/**
 	 * @var bool map is read-only?
 	 */
 	private $_readOnly = false;
+
 	/**
 	 * @var array map data
 	 */
@@ -26,6 +26,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 
 	/**
 	 * Map constructor. Fills the map with an array or \Traversable object data.
+	 *
 	 * @param null|\Traversable|array $data
 	 * @param bool $readOnly
 	 */
@@ -52,13 +53,13 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	 *
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @return \Naga\Core\Collection\Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws ReadOnlyException
 	 */
 	public function add($key, $value)
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't add item to a read-only map.");
+			throw new ReadOnlyException("Can't add item to a read-only map.");
 
 		$this->_data[$key] = $value;
 
@@ -69,13 +70,13 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	 * Removes the item with the specified key.
 	 *
 	 * @param mixed $key
-	 * @return \Naga\Core\Collection\Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws ReadOnlyException
 	 */
 	public function remove($key)
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't remove item from a read-only map.");
+			throw new ReadOnlyException("Can't remove item from a read-only map.");
 
 		if (isset($this->_data[$key]))
 			unset($this->_data[$key]);
@@ -97,13 +98,13 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Clears the map.
 	 *
-	 * @return \Naga\Core\Collection\Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws ReadOnlyException
 	 */
 	public function clear()
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't clear a read-only map.");
+			throw new ReadOnlyException("Can't clear a read-only map.");
 
 		$this->_data = array();
 
@@ -124,7 +125,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Gets the map data as array.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function toArray()
 	{
@@ -134,9 +135,9 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Copies the source data into the map. Existing data will be cleared first.
 	 *
-	 * @param $data
-	 * @return \Naga\Core\Collection\Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @param array|\Traversable $data
+	 * @return $this
+	 * @throws InvalidSourceException
 	 */
 	public function copyFrom($data)
 	{
@@ -152,7 +153,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 				$this->add($key, $value);
 		}
 		else if (!is_null($data))
-			throw new CollectionException("Can't copy data to map, source must be a \\Traversable object or an array.");
+			throw new InvalidSourceException("Can't copy data to map, source must be a \\Traversable object or an array.");
 
 		return $this;
 	}
@@ -160,14 +161,14 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Merges the map data with an array or \Traversable object data using array_merge.
 	 *
-	 * @param $data
-	 * @return \Naga\Core\Collection\Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @param array|\Traversable $data
+	 * @return $this
+	 * @throws InvalidSourceException
 	 */
 	public function mergeWith($data)
 	{
 		if (!is_array($data) && !($data instanceof \Traversable))
-			throw new CollectionException("Can't merge with data, source must be a \\Traversable object or an array.");
+			throw new InvalidSourceException("Can't merge with data, source must be a \\Traversable object or an array.");
 		$tmp = is_array($data) ? $data : array();
 		if (!is_array($data))
 		{
@@ -184,7 +185,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	 * Sets that the map is read only or not.
 	 *
 	 * @param bool $readOnly
-	 * @return \Naga\Core\Collection\Map
+	 * @return $this
 	 */
 	public function setReadOnly($readOnly)
 	{
@@ -226,7 +227,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	 * Returns whether there is an element at the specified offset.
 	 *
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -236,8 +237,8 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Returns the element at the specified offset.
 	 *
-	 * @param integer $offset the offset to retrieve element.
-	 * @return mixed the element at the offset, null if no element is found at the offset
+	 * @param int $offset the offset to retrieve element.
+	 * @return mixed|null the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
 	{
@@ -247,7 +248,7 @@ class Map extends nComponent implements \IteratorAggregate, \Countable, \ArrayAc
 	/**
 	 * Sets the element at the specified offset.
 	 *
-	 * @param integer $offset the offset to set element
+	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)

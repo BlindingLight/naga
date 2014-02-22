@@ -5,6 +5,12 @@ namespace Naga\Core\Cache;
 use Naga\Core\nComponent;
 use Naga\Core\Exception;
 
+/**
+ * Helper class for managing cache connections.
+ *
+ * @package Naga\Core\Cache
+ * @author  BlindingLight<bloodredshade@gmail.com>
+ */
 class CacheManager extends nComponent
 {
 	/**
@@ -38,7 +44,7 @@ class CacheManager extends nComponent
 	 * ....
 	 *
 	 * @param array $config
-	 * @return array
+	 * @return iCache[]
 	 */
 	public function getConnectionsFromConfigArray(array $config)
 	{
@@ -60,21 +66,18 @@ class CacheManager extends nComponent
 	 * 'default' connection.
 	 *
 	 * @param string $name
-	 * @return \Naga\Core\Cache\iCache
-	 * @throw \Naga\Core\Exception\CacheException
+	 * @return iCache
+	 * @throws \Naga\Core\Exception\Cache\ConnectionNotFoundException
 	 */
 	public function get($name = 'default')
 	{
 		try
 		{
-			if (!$name)
-				$name = 'default';
-
-			return $this->component('connection_' . $name);
+			return $this->component('connection_' . ($name ? $name : 'default'));
 		}
-		catch (Exception\ComponentNotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
-			throw new Exception\CacheException("Connection {$name} not found.");
+			throw new Exception\Cache\ConnectionNotFoundException("Connection {$name} not found.");
 		}
 	}
 
@@ -90,7 +93,7 @@ class CacheManager extends nComponent
 	/**
 	 * Gets all connection instances.
 	 *
-	 * @return array
+	 * @return iCache[]
 	 */
 	public function getAllConnections()
 	{

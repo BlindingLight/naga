@@ -2,8 +2,15 @@
 
 namespace Naga\Core\Collection;
 
+use Naga\Core\Exception\Collection\TypeMismatchException;
 use Naga\Core\Exception\CollectionException;
 
+/**
+ * List implementation with strict item type.
+ *
+ * @package Naga\Core\Collection
+ * @author  BlindingLight<bloodredshade@gmail.com>
+ */
 class StrictSimpleList extends SimpleList
 {
 	/**
@@ -30,14 +37,14 @@ class StrictSimpleList extends SimpleList
 	 *
 	 * @param mixed $index
 	 * @param mixed $item
-	 * @return SimpleList
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws TypeMismatchException
 	 */
 	public function insertAt($index, $item)
 	{
 		if ((is_object($item) && $item instanceof $this->_type) || gettype($item) == $this->_type)
 			return parent::insertAt($index, $item);
 
-		throw new CollectionException("Can't add an item with type '" . gettype($item) . "' to a Map<" . $this->_type . ">.");
+		throw new TypeMismatchException("Can't add an item with type '" . gettype($item) . "' to a Map<{$this->_type}>.");
 	}
 }

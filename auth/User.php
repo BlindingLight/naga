@@ -3,16 +3,14 @@
 namespace Naga\Core\Auth;
 
 use Naga\Core\Collection\Map;
-use Naga\Core\Session\Storage\iSessionStorage;
-use Naga\Core\nComponent;
 
 /**
- * Basic 'model' for user authentication.
+ * Basic model for user.
  *
  * @author BlindingLight<bloodredshade@gmail.com>
  * @package Naga\Core\Auth
  */
-class User extends Map
+class AuthUser extends Map
 {
 	/**
 	 * Construct.

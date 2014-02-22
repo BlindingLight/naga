@@ -45,12 +45,12 @@ class Router extends nComponent
 	 * Sets the default route. This will be used if no match found.
 	 *
 	 * @param string $routeName
-	 * @throws \Naga\Core\Exception\ConfigException
+	 * @throws Exception\Routing\RouteNotFoundException
 	 */
 	public function setDefaultRoute($routeName)
 	{
 		if (!isset($this->_routes[$routeName]))
-			throw new Exception\ConfigException("Can't set default route '{$routeName}', doesn't exist.");
+			throw new Exception\Routing\RouteNotFoundException("Can't set default route '{$routeName}', doesn't exist.");
 
 		$this->_defaultRoute = $routeName;
 	}
@@ -69,7 +69,7 @@ class Router extends nComponent
 	 * Routes the request uri. And returns the executed route function/method result.
 	 *
 	 * @return \Naga\Core\Action\Action|mixed
-	 * @throws \Naga\Core\Exception\ConfigException
+	 * @throws Exception\Routing\RouteBadlyConfiguredException
 	 */
 	public function routeUri()
 	{
@@ -85,7 +85,7 @@ class Router extends nComponent
 		if (!isset($route->{$route->method}))
 		{
 			$this->profiler()->stopTimer('routeUri');
-			throw new Exception\ConfigException("Badly configured route, missing 'get'.");
+			throw new Exception\Routing\RouteBadlyConfiguredException("Badly configured route, missing 'get'.");
 		}
 
 		if (is_callable($route->{$route->method}))
@@ -243,12 +243,12 @@ class Router extends nComponent
 	 *
 	 * @param string $mappedUrl
 	 * @param \Callable|string $route
-	 * @throws \Naga\Core\Exception\ConfigException
+	 * @throws Exception\Routing\RouteAlreadyExistsException
 	 */
 	public function addRoute($mappedUrl, $route)
 	{
 		if (isset($this->_routes[$mappedUrl]))
-			throw new Exception\ConfigException("Can't add route '$mappedUrl', already exists.");
+			throw new Exception\Routing\RouteAlreadyExistsException("Can't add route '$mappedUrl', already exists.");
 
 		$this->profiler()->createTimer('addRoute');
 		$route = (object)$route;

@@ -2,8 +2,14 @@
 
 namespace Naga\Core\Collection;
 
-use Naga\Core\Exception\CollectionException;
+use Naga\Core\Exception\Collection\TypeMismatchException;
 
+/**
+ * Map implementation with strict item type.
+ *
+ * @package Naga\Core\Collection
+ * @author  BlindingLight<bloodredshade@gmail.com>
+ */
 class StrictMap extends Map
 {
 	/**
@@ -30,14 +36,14 @@ class StrictMap extends Map
 	 *
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @return Map
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws TypeMismatchException
 	 */
 	public function add($key, $value)
 	{
 		if ((is_object($value) && $value instanceof $this->_type) || gettype($value) == $this->_type)
 			return parent::add($key, $value);
 
-		throw new CollectionException("Can't add an item with type '" . gettype($value) . "' to a Map<" . $this->_type . ">.");
+		throw new TypeMismatchException("Can't add an item with type '" . gettype($value) . "' to a Map<{$this->_type}>.");
 	}
 }

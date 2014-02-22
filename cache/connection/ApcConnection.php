@@ -6,7 +6,7 @@ use Naga\Core\Cache\iCache;
 use Naga\Core\nComponent;
 
 /**
- * Apc cache connection class.
+ * APC cache connection class.
  *
  * @author BlindingLight<bloodredshade@gmail.com>
  * @package Naga\Core\Cache\Connection

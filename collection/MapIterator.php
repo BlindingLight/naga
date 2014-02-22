@@ -12,16 +12,16 @@ use Naga\Core\nComponent;
  */
 class MapIterator extends nComponent implements \Iterator
 {
-	protected static $_componentVersion = 1.0;
-
 	/**
 	 * @var array iterable data
 	 */
 	private $_data;
+
 	/**
 	 * @var array keys in the map
 	 */
 	private $_keys;
+
 	/**
 	 * @var mixed current key
 	 */

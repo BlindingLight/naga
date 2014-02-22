@@ -5,6 +5,12 @@ namespace Naga\Core\Config;
 use Naga\Core\Collection\Map;
 use Naga\Core\FileSystem\iFileSystem;
 
+/**
+ * Container class for config properties.
+ *
+ * @package Naga\Core\Config
+ * @author  BlindingLight<bloodredshade@gmail.com>
+ */
 class ConfigBag extends Map
 {
 	/**
@@ -121,13 +127,19 @@ class ConfigBag extends Map
 	}
 
 	/**
-	 * Gets a config array from a file. Returns the ConfigBag instance.
+	 * Gets a config array from a file. Returns the ConfigBag instance. File must be php,
+	 * and it must return an array.
 	 *
 	 * @param string $filePath
-	 * @return \Naga\Core\Config\ConfigBag
+	 * @return $this
 	 */
 	public function getFile($filePath)
 	{
 		return $this->copyFrom($this->fileSystem()->getRequire($filePath));
+	}
+
+	public function getJsonFile($filePath)
+	{
+		$this->mergeWith((array)json_decode($this->fileSystem()->get($filePath)));
 	}
 }

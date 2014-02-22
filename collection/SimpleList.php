@@ -2,6 +2,9 @@
 
 namespace Naga\Core\Collection;
 
+use Naga\Core\Exception\Collection\InvalidSourceException;
+use Naga\Core\Exception\Collection\OutOfBoundsException;
+use Naga\Core\Exception\Collection\ReadOnlyException;
 use Naga\Core\Exception\CollectionException;
 use Naga\Core\nComponent;
 
@@ -13,16 +16,16 @@ use Naga\Core\nComponent;
  */
 class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	protected static $_componentVersion = 1.0;
-
 	/**
 	 * @var bool list is read-only?
 	 */
 	private $_readOnly = false;
+
 	/**
 	 * @var array list data
 	 */
 	private $_data;
+
 	/**
 	 * @var int item count
 	 */
@@ -30,6 +33,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 
 	/**
 	 * List constructor. Fills the list with an array or \Traversable object data.
+	 *
 	 * @param null|\Traversable|array $data
 	 * @param bool $readOnly
 	 */
@@ -55,13 +59,13 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Adds an item into the list.
 	 *
 	 * @param mixed $item
-	 * @return \Naga\Core\Collection\SimpleList
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @return $this
+	 * @throws ReadOnlyException
 	 */
 	public function add($item)
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't add item to a read-only list.");
+			throw new ReadOnlyException("Can't add item to a read-only list.");
 
 		$this->insertAt($this->_length, $item);
 
@@ -73,32 +77,33 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Original item at the position and the next items
 	 * will be moved one step towards the end.
 	 *
-	 * @param integer $index
+	 * @param int $index
 	 * @param mixed $item
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @throws ReadOnlyException
+	 * @throws OutOfBoundsException
 	 */
 	public function insertAt($index, $item)
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't add item to a read-only list.");
+			throw new ReadOnlyException("Can't add item to a read-only list.");
 
 		// if we want to insert to the end of the list
 		if ($index === $this->_length)
-			$this->_data[$this->_length++] = $item;
+			$this->_data[++$this->_length] = $item;
 		else if($index >= 0 && $index < $this->_length)
 		{
 			array_splice($this->_data, $index, 0, array($item));
-			$this->_length++;
+			++$this->_length;
 		}
 		else
-			throw new CollectionException("List index '$index' is out of bound.");
+			throw new OutOfBoundsException("List index '{$index}' is out of bound.");
 	}
 
 	/**
 	 * Removes the item with the specified key.
 	 *
 	 * @param mixed $index
-	 * @return \Naga\Core\Collection\SimpleList
+	 * @return $this
 	 * @throws \Naga\Core\Exception\CollectionException
 	 */
 	public function remove($index)
@@ -114,7 +119,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Removes an item at the specified position.
 	 *
 	 * @param integer $index the index of the item to be removed.
-	 * @return \Naga\Core\Collection\SimpleList
+	 * @return $this
 	 * @throws \Naga\Core\Exception\CollectionException
 	 */
 	public function removeAt($index)
@@ -162,12 +167,12 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Clears the list.
 	 *
 	 * @return \Naga\Core\Collection\SimpleList
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @throws ReadOnlyException
 	 */
 	public function clear()
 	{
 		if ($this->_readOnly)
-			throw new CollectionException("Can't clear a read-only list.");
+			throw new ReadOnlyException("Can't clear a read-only list.");
 
 		$this->_data = array();
 
@@ -212,9 +217,9 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	/**
 	 * Copies the source data into the list. Existing data will be cleared first.
 	 *
-	 * @param $data
-	 * @return \Naga\Core\Collection\SimpleList
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @param array|\Traversable $data
+	 * @return $this
+	 * @throws InvalidSourceException
 	 */
 	public function copyFrom($data)
 	{
@@ -230,7 +235,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 				$this->add($item);
 		}
 		else if (!is_null($data))
-			throw new CollectionException("Can't copy data to list, source must be a \\Traversable object or an array.");
+			throw new InvalidSourceException("Can't copy data to list, source must be a \\Traversable object or an array.");
 
 		return $this;
 	}
@@ -238,14 +243,14 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	/**
 	 * Merges the list data with an array or \Traversable object data using array_merge.
 	 *
-	 * @param $data
-	 * @return \Naga\Core\Collection\SimpleList
-	 * @throws \Naga\Core\Exception\CollectionException
+	 * @param array|\Traversable $data
+	 * @return $this
+	 * @throws InvalidSourceException
 	 */
 	public function mergeWith($data)
 	{
 		if (!is_array($data) && !($data instanceof \Traversable))
-			throw new CollectionException("Can't merge with data, source must be a \\Traversable object or an array.");
+			throw new InvalidSourceException("Can't merge with data, source must be a \\Traversable object or an array.");
 		$tmp = is_array($data) ? $data : array();
 		if (!is_array($data))
 		{
@@ -262,7 +267,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Sets that the list is read only or not.
 	 *
 	 * @param bool $readOnly
-	 * @return \Naga\Core\Collection\SimpleList
+	 * @return $this
 	 */
 	public function setReadOnly($readOnly)
 	{
@@ -280,15 +285,14 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 		return $this->_readOnly;
 	}
 
-	// TODO: LISTITERATOR
 	/**
 	 * Returns an iterator for traversing the items in the list.
 	 *
-	 * @return \Traversable|MapIterator MapIterator instance
+	 * @return \Traversable|SimpleListIterator SimpleListIterator instance
 	 */
 	public function getIterator()
 	{
-		return new MapIterator($this->_data);
+		return new SimpleListIterator($this->_data);
 	}
 
 	/**
@@ -305,7 +309,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	 * Returns whether there is an element at the specified offset.
 	 *
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -315,7 +319,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	/**
 	 * Returns the element at the specified offset.
 	 *
-	 * @param integer $offset the offset to retrieve element.
+	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -326,7 +330,7 @@ class SimpleList extends nComponent implements \IteratorAggregate, \Countable, \
 	/**
 	 * Sets the element at the specified offset.
 	 *
-	 * @param integer $offset the offset to set element
+	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)
