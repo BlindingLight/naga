@@ -14,7 +14,7 @@ use \Naga\Core\Exception;
 abstract class Application extends nComponent
 {
 	/**
-	 * @var array Application instance list
+	 * @var Application[] Application instance list
 	 */
 	private static $_instances = array();
 
@@ -65,7 +65,7 @@ abstract class Application extends nComponent
 	 * If there is no instance with $name, throws an \Exception.
 	 *
 	 * @param string $name instance name
-	 * @return Application
+	 * @return $this
 	 * @throws \Exception
 	 */
 	public static function instance($name = null)
@@ -115,7 +115,7 @@ abstract class Application extends nComponent
 	 * @param string $name
 	 * @param array $args
 	 * @return mixed
-	 * @throws Exception\NotCallableException
+	 * @throws Exception\Component\NotCallableException
 	 */
 	public function __call($name, $args)
 	{
@@ -123,7 +123,7 @@ abstract class Application extends nComponent
 		if (is_callable($component))
 			return call_user_func_array($component, $args);
 		else
-			throw new Exception\NotCallableException("Component $name (" . gettype($component) . ") is not callable.");
+			throw new Exception\Component\NotCallableException("Component $name (" . gettype($component) . ") is not callable.");
 	}
 
 	/**
@@ -133,7 +133,7 @@ abstract class Application extends nComponent
 	 * @param array $args
 	 * @return mixed|nComponent
 	 * @throws \RuntimeException
-	 * @throws Exception\NotCallableException
+	 * @throws Exception\Component\NotCallableException
 	 */
 	public static function __callStatic($name, $args)
 	{
@@ -145,7 +145,7 @@ abstract class Application extends nComponent
 			else if (is_callable($component))
 				return call_user_func_array($component, $args);
 			else
-				throw new Exception\NotCallableException("Component $name (" . gettype($component) . ") is not callable or not an instance of nComponent.");
+				throw new Exception\Component\NotCallableException("Component $name (" . gettype($component) . ") is not callable or not an instance of nComponent.");
 		}
 
 		throw new \RuntimeException("Can't get application instance.");
@@ -167,7 +167,7 @@ abstract class Application extends nComponent
 
 			return self::instance()->component('database');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get connection '$connectionName', missing DatabaseManager instance.");
 		}
@@ -185,7 +185,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('request');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Request instance.");
 		}
@@ -203,7 +203,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('input');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Input instance.");
 		}
@@ -221,7 +221,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('cookie');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Cookie instance.");
 		}
@@ -239,7 +239,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('securecookie');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get SecureCookie instance.");
 		}
@@ -257,7 +257,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('router');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Router instance.");
 		}
@@ -275,7 +275,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('session');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get SessionManager instance.");
 		}
@@ -293,7 +293,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('fileSystem');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get iFileSystem instance.");
 		}
@@ -318,7 +318,7 @@ abstract class Application extends nComponent
 				return $bag;
 			}
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Config instance.");
 		}
@@ -336,7 +336,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('cache');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get CacheManager instance.");
 		}
@@ -354,7 +354,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('auth');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Auth instance.");
 		}
@@ -372,7 +372,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('urlgenerator');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get UrlGenerator instance.");
 		}
@@ -390,7 +390,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('localization');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Localization instance.");
 		}
@@ -408,7 +408,7 @@ abstract class Application extends nComponent
 		{
 			return self::instance()->component('email');
 		}
-		catch (Exception\NotFoundException $e)
+		catch (Exception\Component\NotFoundException $e)
 		{
 			throw new \RuntimeException("Can't get Email instance.");
 		}
