@@ -78,12 +78,18 @@ class Config extends nComponent
 		else
 			$bag->getFile($filePath);
 
-		return $this->add(str_replace('.' . $extension, '', $this->fileSystem()->baseName($filePath)), $bag);
+		$configName = str_replace(
+			'.' . $extension,
+			'',
+			str_replace(array('/', '\\'), '.', $this->fileSystem()->baseName($filePath))
+		);
+		return $this->add($configName, $bag);
 	}
 
 	/**
 	 * Gets config arrays from files in a directory and creates ConfigBag instance for each file.
-	 * ConfigBag instance name will be the file name without extension.
+	 * ConfigBag instance name will be the file name without extension, subdirectories are separated
+	 * with a dot, eg: translations.en-en
 	 *
 	 * @param string $directory
 	 * @param string|null $extension
@@ -91,9 +97,12 @@ class Config extends nComponent
 	 */
 	public function getFilesInDirectory($directory, $extension = null)
 	{
-		$files = $this->fileSystem()->glob($directory . '/*' . ($extension ? '.' . $extension : ''));
+		$files = $this->fileSystem()->allFiles($directory);
 		foreach ($files as $file)
-			$this->getFile($file);
+		{
+			if ($this->fileSystem()->extension($file) == $extension)
+				$this->getFile($file);
+		}
 
 		return $this;
 	}
