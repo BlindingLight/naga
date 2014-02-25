@@ -3,8 +3,9 @@
 namespace Naga\Core\Cache\Connection;
 
 use Naga\Core\Cache\iCache;
+use Naga\Core\nComponent;
 
-class FakeCacheConnection implements iCache
+class FakeCacheConnection extends nComponent implements iCache
 {
 	/**
 	 * @var string prefix for keys
