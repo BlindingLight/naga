@@ -78,11 +78,16 @@ class Config extends nComponent
 		else
 			$bag->getFile($filePath);
 
-		$configName = str_replace(
-			'.' . $extension,
-			'',
-			str_replace(array('/', '\\'), '.', $this->fileSystem()->baseName($filePath))
-		);
+		$tempNames = explode('/', str_replace('\\', '/', $this->fileSystem()->realPath($filePath)));
+		foreach ($tempNames as $idx => $name)
+		{
+			unset($tempNames[$idx]);
+			if ($name == 'config')
+				break;
+		}
+
+		$configName = str_replace('.' . $extension, '', implode('.', $tempNames));
+
 		return $this->add($configName, $bag);
 	}
 
