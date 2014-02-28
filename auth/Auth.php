@@ -97,7 +97,7 @@ class Auth extends nComponent
 	 */
 	public function isLoggedIn()
 	{
-		return isset($this->_loggedInInstances[0]);
+		return count($this->_loggedInInstances) > 0;
 	}
 
 	/**
