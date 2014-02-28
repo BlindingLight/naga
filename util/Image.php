@@ -35,8 +35,8 @@ class Image extends File
 		$this->initImage();
 		$fileName = $fileName . $this->getExtensionFromMimeType($this->mimeType());
 
-		$original = @imagecreatefromjpeg($this->realPath());
-		$buffer = @imagecreatetruecolor($width, $height);
+		$original = imagecreatefromjpeg($this->realPath());
+		$buffer = imagecreatetruecolor($width, $height);
 
 		if (is_null($cropW) || is_null($cropH))
 			$cropSizes = $this->getCropSizeByAspectRatio((object)array('width' => $width, 'height' => $height));
@@ -48,7 +48,7 @@ class Image extends File
 		else
 			$cropPositions = (object)array('left' => $cropX, 'top' => $cropY);
 
-		@imagecopyresampled(
+		imagecopyresampled(
 			$buffer,
 			$original,
 			0, 0,
@@ -60,7 +60,7 @@ class Image extends File
 			$cropSizes->height
 		);
 
-		$img = @imagejpeg($buffer, $fileName, 90);
+		$img = imagejpeg($buffer, $fileName, 90);
 		if ($img)
 			chmod($fileName, 0777);
 
@@ -74,7 +74,7 @@ class Image extends File
 	 */
 	public function initImage()
 	{
-		$sizes = @getimagesize($this->realPath());
+		$sizes = getimagesize($this->realPath());
 		if ($sizes === false)
 			throw new \Exception('Could not get image width and height.');
 
