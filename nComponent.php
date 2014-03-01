@@ -16,6 +16,9 @@ use Naga\Core\Exception;
  */
 abstract class nComponent implements iComponent
 {
+	protected static $_nagaFrameworkCodeName = 'Infinity';
+	protected static $_nagaFrameworkVersion = '1.2';
+
 	/**
 	 * @var float component version
 	 */

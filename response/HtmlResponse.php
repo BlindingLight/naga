@@ -26,6 +26,7 @@ class HtmlResponse extends Response
 	{
 		$this->_data = $content;
 		$this->setMimeType('text/html');
+		$this->setHeader('Content-type', $this->mimeType());
 	}
 
 	/**
@@ -92,7 +93,7 @@ class HtmlResponse extends Response
 	 */
 	public function send($exitAfter = false)
 	{
-		header('Content-type: ' . $this->mimeType());
+		$this->sendHeaders();
 		echo $this->_data;
 		if ($exitAfter)
 			exit();

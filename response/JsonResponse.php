@@ -20,6 +20,7 @@ class JsonResponse extends Response implements iResponse
 	{
 		parent::__construct($data, $readOnly);
 		$this->setMimeType('application/json');
+		$this->setHeader('Content-type', $this->mimeType());
 	}
 
 	/**
@@ -39,7 +40,7 @@ class JsonResponse extends Response implements iResponse
 	 */
 	public function send($exitAfter = false)
 	{
-		header('Content-type: ' . $this->mimeType());
+		$this->sendHeaders();
 		echo json_encode($this->data());
 		if ($exitAfter)
 			exit();
