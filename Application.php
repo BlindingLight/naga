@@ -155,7 +155,7 @@ abstract class Application extends nComponent
 	 * Gets an iDatabaseConnection instance. If $connectionName is null, gets the DatabaseManager instance.
 	 *
 	 * @param string|null $connectionName
-	 * @return \Naga\Core\Database\Connection\iDatabaseConnection|\Naga\Core\Database\DatabaseManager
+	 * @return \Naga\Core\Database\Connection\iDatabaseConnection|\Naga\Core\Database\Connection\CacheableDatabaseConnection|\Naga\Core\Database\DatabaseManager
 	 * @throws \RuntimeException
 	 */
 	public static function database($connectionName = 'default')
