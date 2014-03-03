@@ -14,17 +14,13 @@ use Naga\Core\Database\Connection\CacheableDatabaseConnection;
 abstract class Model extends Map
 {
 	/**
-	 * @var array internal data storage
-	 */
-	private $_data = array();
-	/**
 	 * @var array data key -> database field key map
 	 */
 	protected $_fieldMap = array();
 
 	public function __construct($id = null, CacheableDatabaseConnection $db, $load = true)
 	{
-		$this->_data['id'] = $id;
+		$this->add('id', $id);
 		$this->registerComponent('database', $db);
 		if ($id && $load)
 			$this->load();
@@ -52,7 +48,7 @@ abstract class Model extends Map
 	 */
 	public function id()
 	{
-		return $this->_data['id'];
+		return $this->get('id');
 	}
 
 	/**
@@ -61,13 +57,13 @@ abstract class Model extends Map
 	 * @param array $properties
 	 * @return $this
 	 */
-	public function mergeFrom(array $properties)
+	public function mergeWith(array $properties)
 	{
 		// filtering id
 		if (isset($properties['id']))
 			unset($properties['id']);
 
-		$this->_data = array_merge($this->_data, $properties);
+		parent::mergeWith($properties);
 
 		return $this;
 	}
@@ -83,7 +79,7 @@ abstract class Model extends Map
 		if (isset($this->_fieldMap[$property]))
 			$property = $this->_fieldMap[$property];
 
-		return isset($this->_data[$property]) ? $this->_data[$property] : null;
+		return parent::get($property);
 	}
 
 	/**
@@ -99,7 +95,7 @@ abstract class Model extends Map
 		if ($property == 'id' && $this->_data['id'] != 0)
 			throw new \Exception("You can't change a model's id.");
 
-		$this->_data[$property] = $value;
+		parent::add($property);
 
 		return $this;
 	}
@@ -112,6 +108,6 @@ abstract class Model extends Map
 	 */
 	public function __isset($property)
 	{
-	  	return isset($this->_data[$property]) || isset($this->_fieldMap[$property]);
+	  	return parent::offsetExists($property);
 	}
 }
