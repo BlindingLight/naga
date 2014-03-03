@@ -92,10 +92,10 @@ abstract class Model extends Map
 	 */
 	public function __set($property, $value)
 	{
-		if ($property == 'id' && $this->_data['id'] != 0)
+		if ($property == 'id' && $this->get('id') != 0)
 			throw new \Exception("You can't change a model's id.");
 
-		parent::add($property);
+		parent::add($property, $value);
 
 		return $this;
 	}
