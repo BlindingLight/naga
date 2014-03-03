@@ -60,7 +60,7 @@ abstract class Model extends Map
 	public function mergeWith(array $properties)
 	{
 		// filtering id
-		if (isset($properties['id']))
+		if (isset($property['id']) && $this->get('id') != 0)
 			unset($properties['id']);
 
 		parent::mergeWith($properties);
