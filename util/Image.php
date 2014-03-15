@@ -3,7 +3,6 @@
 namespace Naga\Core\Util;
 
 use Naga\Core\FileSystem\File;
-use Naga\Core\nComponent;
 
 /**
  * Basic class for image resizing and cropping. BETA VERSION.
@@ -13,8 +12,21 @@ use Naga\Core\nComponent;
  */
 class Image extends File
 {
+	// filter consts
+	const FilterGrayscale = IMG_FILTER_GRAYSCALE;
+
+	/**
+	 * @var object original width and height
+	 */
 	protected $_originalSize;
+	/**
+	 * @var object original aspect ratio
+	 */
 	protected $_originalRatio;
+	/**
+	 * @var array basic filters
+	 */
+	protected $_basicFilters = array();
 
 	/**
 	 * Saves a cropped image. Currently supports only jpeg images.
@@ -60,11 +72,42 @@ class Image extends File
 			$cropSizes->height
 		);
 
+		// applying filters
+		foreach ($this->_basicFilters as $filter)
+			imagefilter($buffer, $filter);
+
 		$img = imagejpeg($buffer, $fileName, 90);
 		if ($img)
 			chmod($fileName, 0777);
 
 		return $img;
+	}
+
+	/**
+	 * Adds a basic filter that'll be applied to the image when saving.
+	 *
+	 * @param int $filter see class Filter consts
+	 * @return $this
+	 */
+	public function addBasicFilter($filter)
+	{
+		$this->_basicFilters[$filter] = $filter;
+
+	    return $this;
+	}
+
+	/**
+	 * Removes a basic filter.
+	 *
+	 * @param int $filter see class Filter consts
+	 * @return $this
+	 */
+	public function removeBasicFilter($filter)
+	{
+		if (isset($this->_basicFilters[$filter]))
+			unset($this->_basicFilters[$filter]);
+
+		return $this;
 	}
 
 	/**
