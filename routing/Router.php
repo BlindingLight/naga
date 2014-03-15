@@ -144,6 +144,8 @@ class Router extends nComponent
 	protected function matchUri($uri)
 	{
 		$this->profiler()->createTimer('matchUri');
+		if (empty($uri))
+			$uri = '/';
 		$uri = $uri != '/' ? trim($uri, '/') : $uri;
 		foreach ($this->_urlMappings as $mappedUrl => $routeName)
 		{
