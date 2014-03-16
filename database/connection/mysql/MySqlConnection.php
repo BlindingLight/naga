@@ -192,6 +192,7 @@ class MySqlConnection extends CacheableDatabaseConnection
 		{
 			$statement = $this->_pdo->query($query);
 			$statement->closeCursor();
+			$statement->execute();
 		}
 		catch (\PDOException $e)
 		{
