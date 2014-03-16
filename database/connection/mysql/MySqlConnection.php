@@ -33,6 +33,10 @@ class MySqlConnection extends CacheableDatabaseConnection
 	 * @var string
 	 */
 	private $_password;
+	/**
+	 * @var bool
+	 */
+	private $_lazyConnect = true;
 
 	/**
 	 * Construct.
@@ -55,6 +59,7 @@ class MySqlConnection extends CacheableDatabaseConnection
 		$this->_password = $password;
 		$this->_isPersistent = (bool)$persistent;
 		$this->setName($name);
+		$this->_lazyConnect = $lazyConnect;
 	}
 
 	/**
@@ -100,7 +105,14 @@ class MySqlConnection extends CacheableDatabaseConnection
 	 */
 	public function connected()
 	{
-		return $this->_pdo instanceof \PDO;
+		$connected = $this->_pdo instanceof \PDO;
+		if ($this->_lazyConnect && !$connected)
+		{
+			$this->connect();
+			return true;
+		}
+
+		return $connected;
 	}
 
 	/**
