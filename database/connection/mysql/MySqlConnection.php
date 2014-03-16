@@ -141,7 +141,7 @@ class MySqlConnection extends CacheableDatabaseConnection
 
 		$this->_lastAffectedRows = $statement->rowCount();
 		// insert, update, delete -> return affected rows
-		if ($this->_lastAffectedRows)
+		if ($this->_lastAffectedRows && strpos(strtolower(trim($query)), 'select') !== 0)
 			return true;
 
 		return $statement->fetchAll(\PDO::FETCH_OBJ);
