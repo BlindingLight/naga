@@ -130,13 +130,7 @@ class MySqlConnection extends CacheableDatabaseConnection
 			throw new Exception\DatabaseException("Can't do query on a closed connection.");
 
 		$statement = $this->_pdo->prepare($query);
-		foreach ($args as $idx => $arg)
-		{
-			$key = is_numeric($idx) ? $idx + 1 : $idx;
-			$statement->bindParam($key, $arg);
-		}
-
-		if (!$statement->execute())
+		if (!$statement->execute($args))
 			throw new Exception\DatabaseQueryException("Query error: " . $this->getLastError());
 
 		$this->_lastAffectedRows = $statement->rowCount();
