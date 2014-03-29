@@ -30,15 +30,21 @@ class Router extends nComponent
 	 * @var string
 	 */
 	private $_matchedMappedUrl;
+	/**
+	 * @var string used if site is running in a directory, eg example.com/site
+	 */
+	private $_basePath = '';
 
 	/**
 	 * Construct.
 	 *
 	 * @param Request $request
+	 * @param string $basePath
 	 */
-	public function __construct(Request $request)
+	public function __construct(Request $request, $basePath = '')
 	{
 		$this->registerComponent('request', $request);
+		$this->_basePath = $basePath;
 	}
 
 	/**
@@ -75,7 +81,7 @@ class Router extends nComponent
 	{
 		$this->profiler()->createTimer('routeUri');
 
-		$route = $this->matchUri($this->request()->uri());
+		$route = $this->matchUri($this->uri());
 		$route->parameters = $this->getParameters($this->_matchedMappedUrl, $route->parameters);
 		$route->method = $this->request()->httpMethodString();
 
@@ -111,7 +117,7 @@ class Router extends nComponent
 	}
 
 	/**
-	 * Creates an associative parameters array for the given mapped url from the $parameters array.
+	 * Creates an associative array of parameters for the given mapped url from the $parameters array.
 	 *
 	 * @param string $mappedUrl
 	 * @param array $parameters an array containing parameter values, must be number indexed
@@ -159,7 +165,7 @@ class Router extends nComponent
 					continue;
 				}
 
-				array_shift($matches);
+				$matches['rootUriPart'] = array_shift($matches);
 				$this->_routes[$routeName]->parameters = $matches;
 				$this->_matchedMappedUrl = $mappedUrl;
 				$this->profiler()->stopTimer('matchUri');
@@ -301,5 +307,20 @@ class Router extends nComponent
 	protected function request()
 	{
 		return $this->component('request');
+	}
+
+	/**
+	 * Gets current uri without base path.
+	 *
+	 * @return string
+	 */
+	protected function uri()
+	{
+		if (!$this->_basePath)
+			return $this->request()->uri();
+
+		$basePath = $this->_basePath{strlen($this->_basePath) - 1} == '/' ? $this->_basePath : "{$this->_basePath}/";
+
+		return str_replace($basePath, '', $this->request()->uri());
 	}
 }

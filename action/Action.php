@@ -74,5 +74,15 @@ abstract class Action extends nComponent
 		return $this->_view;
 	}
 
+	/**
+	 * Gets root part of current uri.
+	 *
+	 * @return string
+	 */
+	protected function rootUriPart()
+	{
+		return $this->get('rootUriPart');
+	}
+
 	abstract public function execute();
 }

@@ -92,4 +92,29 @@ class View extends nComponent
 	{
 		return $this->_template;
 	}
+
+	/**
+	 * Gets an assigned property from template.
+	 *
+	 * @param string $property
+	 * @return mixed|null
+	 */
+	public function get($property)
+	{
+		return $this->template()->get($property);
+	}
+
+	/**
+	 * Assigns a property for template.
+	 *
+	 * @param string $property
+	 * @param mixed $value
+	 * @return $this
+	 */
+	public function assign($property, $value)
+	{
+		$this->template()->assign($property, $value);
+
+		return $this;
+	}
 }

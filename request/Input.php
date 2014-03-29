@@ -58,10 +58,40 @@ class Input extends nComponent
 	public function file($fileName, $fileClassName = '\Naga\Core\FileSystem\UploadedFile')
 	{
 		if (!isset($_FILES[$fileName]))
-			throw new Exception\FileNotFoundException("Can't get uploaded file $fileName.");
+			throw new Exception\FileNotFoundException("Can't get uploaded file {$fileName}.");
 
 		$file = $_FILES[$fileName];
 		return new $fileClassName($this->fileSystem(), $file['tmp_name'], $file['name'], $file['error']);
+	}
+
+	/**
+	 * Gets files uploaded with <input type="file" multiple>.
+	 *
+	 * @param string $name
+	 * @param string $fileClassName
+	 * @return array
+	 * @throws \Naga\Core\Exception\FileNotFoundException
+	 */
+	public function multipleFile($name, $fileClassName = '\Naga\Core\FileSystem\UploadedFile')
+	{
+		if (!isset($_FILES[$name]))
+			throw new Exception\FileNotFoundException("Can't get uploaded file {$name}.");
+
+		$files = array();
+		if (!isset($_FILES[$name]) || !count($_FILES[$name]['name']) || !$_FILES[$name]['name'][0])
+			return $files;
+
+		for ($i = 0, $fileCount = count($_FILES[$name]['name']); $i < $fileCount; ++$i)
+		{
+			$files[] = new $fileClassName(
+				$this->fileSystem(),
+				$_FILES[$name]['tmp_name'][$i],
+				$_FILES[$name]['name'][$i],
+				$_FILES[$name]['error'][$i]
+			);
+		}
+
+		return $files;
 	}
 
 	/**
