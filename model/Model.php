@@ -54,16 +54,16 @@ abstract class Model extends Map
 	/**
 	 * Sets properties from an array.
 	 *
-	 * @param array $properties
+	 * @param array $data
 	 * @return $this
 	 */
-	public function mergeWith(array $properties)
+	public function mergeWith($data)
 	{
 		// filtering id
-		if (isset($property['id']) && $this->get('id') != 0)
-			unset($properties['id']);
+		if (isset($data['id']) && $this->get('id') != 0)
+			unset($data['id']);
 
-		parent::mergeWith($properties);
+		parent::mergeWith($data);
 
 		return $this;
 	}
