@@ -106,7 +106,3 @@ if ($app->config()->exists('email'))
 
 // localization init
 $app->localization = new \Naga\Core\Localization\Localization();
-
-// setting default language
-$app->localization()->setDefaultLanguage(1);
-$app->localization()->setCurrentLanguage(1);

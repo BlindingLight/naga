@@ -4,7 +4,7 @@ return array(
 	'resolvers' => array(
 		'Twig' => function($className)
 		{
-			return str_replace(array('_', "\0"), array('/', ''), $className) . '.php';
+			return 'twig/twig/lib/' . str_replace(array('_', "\0"), array('/', ''), $className) . '.php';
 		},
 		'Swift' => function($className)
 		{
