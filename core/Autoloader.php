@@ -144,7 +144,7 @@ class Autoloader extends nComponent
 		{
 			if (strpos($className, $startString) === 0 && is_callable($callable))
 			{
-				$filePath = '/external/' . $callable($className);
+				$filePath = '/vendor/' . $callable($className);
 				if (file_exists($this->_rootDirectory . $filePath))
 					return $filePath;
 			}
