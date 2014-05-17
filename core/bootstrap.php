@@ -86,7 +86,7 @@ if ($app->config()->exists('databases'))
 }
 
 // SwiftMailer config
-require_once(__DIR__ . '/../vendor/SwiftMailer/swift_required.php');
+require_once(__DIR__ . '/../vendor/swiftmailer/swift_required.php');
 Swift::init(function()
 {
 	Swift_Preferences::getInstance()->setCharset('UTF-8');
