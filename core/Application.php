@@ -435,5 +435,19 @@ abstract class Application extends nComponent
 			$this->auth->storeSessionData();
 	}
 
-	abstract public function run();
+	/**
+	 * Application logic.
+	 */
+	public function run()
+	{
+
+	}
+
+	/**
+	 * Performs initialization tasks.
+	 */
+	public function init()
+	{
+
+	}
 }
