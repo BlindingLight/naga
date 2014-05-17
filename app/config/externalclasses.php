@@ -9,7 +9,7 @@ return array(
 		'Swift' => function($className)
 		{
 			$dirs = explode('_', $className);
-			$classPath = 'swiftmailer/classes/';
+			$classPath = 'swiftmailer/swiftmailer/lib/classes/';
 			$className = array_pop($dirs);
 			foreach ($dirs as $dir)
 				$classPath .= $dir . '/';
