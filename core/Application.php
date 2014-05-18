@@ -415,6 +415,23 @@ abstract class Application extends nComponent
 	}
 
 	/**
+	 * Gets the app's Events instance.
+	 *
+	 * @return \Naga\Core\Event\Events
+	 * @throws \RuntimeException
+	 */
+	public static function events()
+	{
+		try
+		{
+			return self::instance()->component('events');
+		}
+		catch (Exception\Component\NotFoundException $e)
+		{
+			throw new \RuntimeException("Can't get Events instance.");
+		}
+	}
+	/**
 	 * Redirects the user to the specified url.
 	 *
 	 * @param string $url

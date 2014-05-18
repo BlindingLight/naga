@@ -6,6 +6,7 @@ try
 {
 	require_once('../core/bootstrap.php');
 
+	$app->init();
 	$app->run();
 	$app->finish();
 }

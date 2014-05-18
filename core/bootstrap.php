@@ -24,6 +24,9 @@ $app = new App\App();
 
 // DON'T CHANGE THE ATTRIBUTE NAMES IF YOU WANT TO USE THE PREDEFINED ACCESSOR STATIC METHODS
 
+// events
+$app->events = new \Naga\Core\Event\Events();
+
 // instantiating FileSystem
 $app->fileSystem = new \Naga\Core\FileSystem\FileSystem();
 

@@ -13,7 +13,6 @@ class App extends Application
 		if ($this->auth()->isLoggedIn() && $this->input()->exists('logout'))
 		{
 			$this->auth()->logout();
-			$this->cookie()->delete('rhs');
 			$this->redirect();
 		}
 
