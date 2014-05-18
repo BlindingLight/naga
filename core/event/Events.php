@@ -111,9 +111,7 @@ class Events extends nComponent
 	 */
 	public function fire($eventName, $params = array())
 	{
-		if (!isset($this->_events[$eventName]))
-			throw new \RuntimeException("Event with name {$eventName} not found.");
-		else
+		if (isset($this->_events[$eventName]))
 			$this->_events[$eventName]->fire($params);
 
 		return $this;
