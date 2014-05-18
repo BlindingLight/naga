@@ -7,8 +7,8 @@ use Naga\Core\nComponent;
 /**
  * Event implementation. When an event fires, the callback gets parameters in this order:
  * 1. Event name
- * 2. Parameters passed to listen()
- * 3. Parameters passed when event fired
+ * 2. Parameters passed to listen() or queue()
+ * 3. Parameters passed when event fired / queue flushed
  *
  * @package Naga\Core\Event
  * @author  BlindingLight<bloodredshade@gmail.com>
@@ -23,6 +23,11 @@ class Event extends nComponent
 	 * @var array event listeners
 	 */
 	private $_listeners = array();
+
+	/**
+	 * @var array queued listeners
+	 */
+	private $_queue = array();
 
 	/**
 	 * Construct.
@@ -56,16 +61,44 @@ class Event extends nComponent
 	}
 
 	/**
+	 * Adds a listener to the event queue
+	 *
+	 * @param callable|string   $task
+	 * @param array|null        $params
+	 * @param int               $priority
+	 * @return $this
+	 */
+	public function addToQueue($task, $params, $priority)
+	{
+		if (!isset($this->_queue[$priority]) || !is_array($this->_queue[$priority]))
+			$this->_queue[$priority] = array();
+
+		$this->_queue[$priority][] = (object)array(
+			'task' => $task,
+			'params' => is_array($params) ? $params : array(),
+		);
+
+		return $this;
+	}
+
+	/**
 	 * Fires the event.
 	 *
 	 * @param array $params
+	 * @param bool  $queue tells whether we process the event queue
+	 * @return $this
 	 */
-	public function fire($params = array())
+	public function fire($params = array(), $queue = false)
 	{
-		foreach ($this->_listeners as $priority => $listeners)
+		if (!$queue)
+			$listeners = &$this->_listeners;
+		else
+			$listeners = &$this->_queue;
+
+		foreach ($listeners as $priority => $items)
 		{
 			$stopPropagation = false;
-			foreach ($listeners as $listener)
+			foreach ($items as $listener)
 			{
 				$privateParams = array($this->_name);
 				$privateParams = array_merge($privateParams, $listener->params, $params);
@@ -97,8 +130,29 @@ class Event extends nComponent
 			if ($stopPropagation === false)
 				break;
 		}
+
+		return $this;
 	}
 
+	/**
+	 * Executes items in the event queue and clears the queue.
+	 *
+	 * @param array $params
+	 * @return $this
+	 */
+	public function flush($params)
+	{
+		$this->fire($params, true);
+		$this->_queue = array();
+
+		return $this;
+	}
+
+	/**
+	 * Gets event name.
+	 *
+	 * @return string
+	 */
 	public function name()
 	{
 		return $this->_name;

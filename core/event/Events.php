@@ -31,9 +31,10 @@ class Events extends nComponent
 	 * @param callable|string   $task
 	 * @param array|null        $params
 	 * @param int               $priority
+	 * @param bool              $queued tells whether $task is queued
 	 * @return $this
 	 */
-	private function lowPriorityListen($eventName, $task, $params = array(), $priority = 1)
+	private function lowPriorityListen($eventName, $task, $params = array(), $priority = 1, $queued = false)
 	{
 		// handling wildcard
 		$events = array($eventName);
@@ -59,7 +60,10 @@ class Events extends nComponent
 			if (!isset($this->_events[$eventName]))
 				$this->_events[$eventName] = new Event($eventName);
 
-			$this->_events[$eventName]->addListener($task, $params, $priority);
+			if (!$queued)
+				$this->_events[$eventName]->addListener($task, $params, $priority);
+			else
+				$this->_events[$eventName]->addToQueue($task, $params, $priority);
 		}
 
 		return $this;
@@ -113,6 +117,34 @@ class Events extends nComponent
 			$this->_events[$eventName]->fire($params);
 
 		return $this;
+	}
+
+	/**
+	 * Adds an item to the event queue. Use flush() to fire all items in the queue.
+	 *
+	 * @param string            $eventName
+	 * @param callable|string   $task
+	 * @param array|null        $params
+	 * @param int               $priority
+	 * @return $this
+	 */
+	public function queue($eventName, $task, $params = array(), $priority = 0)
+	{
+		$this->lowPriorityListen($eventName, $task, $params, $priority, true);
+
+		return $this;
+	}
+
+	/**
+	 * Executes items in the event's queue and clears the queue.
+	 *
+	 * @param string $eventName
+	 * @param array $params
+	 */
+	public function flush($eventName, $params = array())
+	{
+		if (isset($this->_events[$eventName]))
+			$this->_events[$eventName]->flush($params);
 	}
 
 	/**
