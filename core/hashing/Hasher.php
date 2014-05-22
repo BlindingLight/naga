@@ -3,6 +3,8 @@
 namespace Naga\Core\Hashing;
 
 use Naga\Core\Hashing\Algorithm\Algorithm;
+use Naga\Core\Hashing\Algorithm\BaseMd5;
+use Naga\Core\Hashing\Algorithm\BaseSha1;
 use Naga\Core\nComponent;
 
 /**
@@ -65,5 +67,41 @@ class Hasher extends nComponent
 	public function generateUniqueToken($length = 32)
 	{
 		return $this->algorithm()->generateUnique();
+	}
+
+	/**
+	 * Gets a BaseSha1 instance.
+	 *
+	 * @return BaseSha1
+	 */
+	public function sha1()
+	{
+		try
+		{
+			return $this->component('sha1');
+		}
+		catch (\Exception $e)
+		{
+			$this->registerComponent('sha1', new BaseSha1());
+			return $this->component('sha1');
+		}
+	}
+
+	/**
+	 * Gets a BaseMd5 instance.
+	 *
+	 * @return BaseMd5
+	 */
+	public function md5()
+	{
+		try
+		{
+			return $this->component('md5');
+		}
+		catch (\Exception $e)
+		{
+			$this->registerComponent('md5', new BaseMd5());
+			return $this->component('md5');
+		}
 	}
 }

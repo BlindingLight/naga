@@ -431,6 +431,25 @@ abstract class Application extends nComponent
 			throw new \RuntimeException("Can't get Events instance.");
 		}
 	}
+
+	/**
+	 * Gets the app's Hasher instance.
+	 *
+	 * @return \Naga\Core\Hashing\Hasher
+	 * @throws \RuntimeException
+	 */
+	public static function hasher()
+	{
+		try
+		{
+			return self::instance()->component('hasher');
+		}
+		catch (Exception\Component\NotFoundException $e)
+		{
+			throw new \RuntimeException("Can't get Hasher instance.");
+		}
+	}
+
 	/**
 	 * Redirects the user to the specified url.
 	 *

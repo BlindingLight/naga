@@ -3,19 +3,19 @@
 namespace Naga\Core\Hashing\Algorithm;
 
 /**
- * Algorithm class for basic sha1 hashing.
+ * Algorithm class for basic md5 hashing.
  *
  * @author BlindingLight<bloodredshade@gmail.com>
  * @package Naga\Core\Hashing\Algorithm
  */
-class BaseSha1 extends Algorithm
+class BaseMd5 extends Algorithm
 {
 	/**
-	 * Construct. Sets hash length to 40 (sha1 hash length), salt length to 32 (md5 hash length).
+	 * Construct. Sets hash length to 32 (md5 hash length), salt length to 32 (md5 hash length).
 	 */
 	public function __construct()
 	{
-		$this->setHashLength(40);
+		$this->setHashLength(32);
 		$this->setSaltLength(32);
 	}
 
@@ -32,13 +32,13 @@ class BaseSha1 extends Algorithm
 	public function hash($input, $salt = '', $raw = false)
 	{
 		if ($raw)
-			return sha1($input . (!$salt ? $this->lastSalt() : $salt), true);
+			return md5($input . (!$salt ? $this->lastSalt() : $salt), true);
 
-		return substr(sha1($input . (!$salt ? $this->lastSalt() : $salt)), -$this->hashLength());
+		return substr(md5($input . (!$salt ? $this->lastSalt() : $salt)), -$this->hashLength());
 	}
 
 	/**
-	 * Gets a file's sha1 hash.
+	 * Gets a file's md5 hash.
 	 *
 	 * @param string $filePath
 	 * @param bool $raw
@@ -46,6 +46,6 @@ class BaseSha1 extends Algorithm
 	 */
 	public function fileHash($filePath, $raw = false)
 	{
-		return sha1_file($filePath, !(!$raw));
+		return md5_file($filePath, !(!$raw));
 	}
 }
