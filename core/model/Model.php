@@ -39,8 +39,16 @@ abstract class Model extends Map
 		return $this;
 	}
 
-	public abstract function save();
-	public abstract function delete();
+	public function save()
+	{
+
+	}
+
+	public function delete()
+	{
+
+	}
+
 	public function create()
 	{
 		if ($this->id())
