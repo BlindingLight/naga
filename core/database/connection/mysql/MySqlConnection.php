@@ -138,6 +138,10 @@ class MySqlConnection extends CacheableDatabaseConnection
 		if ($this->_lastAffectedRows && strpos(strtolower(trim($query)), 'select') !== 0)
 			return true;
 
+		// create statements
+		if (stripos($query, 'create') === 0)
+			return true;
+
 		return $statement->fetchAll(\PDO::FETCH_OBJ);
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Naga\Core\Database\Orm;
+namespace Naga\Core\Database;
 
 use Naga\Core\iComponent;
 
@@ -11,7 +11,7 @@ interface iQueryBuilder extends iComponent
 	public function dropDatabase($database);
 	public function alterDatabase($database);
 
-	public function createTable($table);
+	public function createTable($table, $settings, $columns);
 	public function dropTable($table);
 	public function truncateTable($table);
 	public function alterTable($table);
@@ -19,7 +19,7 @@ interface iQueryBuilder extends iComponent
 
 	// data manipulation statements
 	public function table($table);
-	public function select(array $columns);
+	public function select();
 	public function update(array $data);
 	public function delete();
 	public function insert(array $columns);
@@ -31,8 +31,8 @@ interface iQueryBuilder extends iComponent
 	public function join($target);
 
 	// conditions
-	public function condition($first, $operand, $second);
-	public function orCondition($first, $operand, $second);
+	public function condition($first, $operator, $second);
+	public function orCondition($first, $operator, $second);
 	public function equals($first, $second);
 	public function orEquals($first, $second);
 	public function greaterThan($first, $second);
@@ -43,14 +43,22 @@ interface iQueryBuilder extends iComponent
 	public function orBetween($what, $from, $to);
 	public function in($what, array $list);
 	public function orIn($what, array $list);
-	public function exists($query);
-	public function orExists($query);
+	public function exists($callback);
+	public function orExists($callback);
 
 	// grouping
 	public function groupStart($name);
 	public function groupEnd($name);
 
 	// get results
-	public function execute();
+	public function execute($oneRow = false);
 	public function generate();
+
+	// other
+	/**
+	 * Resets the instance.
+	 *
+	 * @return iQueryBuilder
+	 */
+	public function reset();
 }

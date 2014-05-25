@@ -451,6 +451,24 @@ abstract class Application extends nComponent
 	}
 
 	/**
+	 * Gets the app's iQueryBuilder instance.
+	 *
+	 * @return \Naga\Core\Database\iQueryBuilder
+	 * @throws \RuntimeException
+	 */
+	public static function queryBuilder()
+	{
+		try
+		{
+			return self::instance()->component('queryBuilder');
+		}
+		catch (Exception\Component\NotFoundException $e)
+		{
+			throw new \RuntimeException("Can't get iQueryBuilder instance.");
+		}
+	}
+
+	/**
 	 * Redirects the user to the specified url.
 	 *
 	 * @param string $url

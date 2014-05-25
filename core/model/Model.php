@@ -2,8 +2,8 @@
 
 namespace Naga\Core\Model;
 
+use Naga\Core\Application;
 use Naga\Core\Collection\Map;
-use Naga\Core\Database\Connection\CacheableDatabaseConnection;
 
 /**
  * Abstract class for creating models.
@@ -17,34 +17,71 @@ abstract class Model extends Map
 	 * @var array data key -> database field key map
 	 */
 	protected $_fieldMap = array();
+	/**
+	 * @var string model's table name
+	 */
+	protected $_table;
 
-	public function __construct($id = null, CacheableDatabaseConnection $db, $load = true)
+	public function __construct($id = null, Application $app, $load = true)
 	{
 		$this->add('id', $id);
-		$this->registerComponent('database', $db);
+		$this->registerComponent('app', $app);
 		if ($id && $load)
 			$this->load();
 	}
 
-	public abstract function load();
+	public function load()
+	{
+		$query = $this->app()->queryBuilder()->reset();
+		$data = $query->table($this->_table)->select()->equals('id', $this->id())->execute(true);
+		$this->mergeWith((array)$data);
+
+		return $this;
+	}
+
 	public abstract function save();
 	public abstract function delete();
-	public abstract function create();
+	public function create()
+	{
+		if ($this->id())
+			$this->remove('id');
+
+		var_dump($this->toArray());
+		$query = $this->app()->queryBuilder()->reset();
+		$data = $query->table($this->_table)->insert($this->toArray())->execute();
+
+		return $this;
+	}
 
 	/**
-	 * Gets the model's CacheableDatabaseConnection instance.
+	 * Creates database table for model.
 	 *
-	 * @return CacheableDatabaseConnection
+	 * @param array $columns
+	 * @param array $settings
 	 */
-	public function db()
+	public function install($columns = array(), $settings = array())
 	{
-		return $this->component('database');
+		$query = $this->app()->queryBuilder()->reset();
+		$query->createTable($this->_table, $settings, $columns);
+
+		echo $query->generate();
+		$query->execute();
+	}
+
+	/**
+	 * Gets the model's Application instance.
+	 *
+	 * @return Application
+	 */
+	public function app()
+	{
+		return $this->component('app');
 	}
 
 	/**
 	 * Gets the model's id.
 	 *
-	 * @return null|string
+	 * @return null|string|int
 	 */
 	public function id()
 	{
@@ -52,7 +89,7 @@ abstract class Model extends Map
 	}
 
 	/**
-	 * Sets properties from an array.
+	 * Sets properties from an array. You can't set id with this method.
 	 *
 	 * @param array $data
 	 * @return $this
