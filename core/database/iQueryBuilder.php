@@ -11,7 +11,7 @@ interface iQueryBuilder extends iComponent
 	public function dropDatabase($database);
 	public function alterDatabase($database);
 
-	public function createTable($table, $settings, $columns);
+	public function createTable($table, array $settings, array $columns);
 	public function dropTable($table);
 	public function truncateTable($table);
 	public function alterTable($table);

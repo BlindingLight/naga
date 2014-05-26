@@ -13,13 +13,23 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 	public function dropDatabase($database) { }
 	public function alterDatabase($database) { }
 
-	public function createTable($table, $settings, $columns)
+	/**
+	 * Creates a table.
+	 *
+	 * @param string $table
+	 * @param array $settings
+	 * @param array $columns
+	 * @return $this
+	 */
+	public function createTable($table, array $settings, array $columns)
 	{
 		$this->_query['createTable'] = (object)array(
 			'table' => $table,
 			'settings' => $settings,
 			'columns' => $columns
 		);
+
+		return $this;
 	}
 
 	public function dropTable($table) { }
@@ -27,6 +37,12 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 	public function alterTable($table) { }
 	public function renameTable($table) { }
 
+	/**
+	 * Selects a table.
+	 *
+	 * @param string $table
+	 * @return $this
+	 */
 	public function table($table)
 	{
 		$this->_query['table'] = $table;
@@ -34,6 +50,13 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		return $this;
 	}
 
+	/**
+	 * Select statement. Arguments are the columns you want retrieve.
+	 * Example:
+	 * select('column1', 'column2', ...)
+	 *
+	 * @return $this
+	 */
 	public function select()
 	{
 		$this->_query['select'] = func_get_args();
@@ -41,9 +64,41 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		return $this;
 	}
 
-	public function update(array $data) { }
-	public function delete() { }
+	/**
+	 * Update statement.
+	 * Example:
+	 * update(array('column1' => 'some value', ...))
+	 *
+	 * @param array $data
+	 * @return $this
+	 */
+	public function update(array $data)
+	{
+		$this->_query['update'] = $data;
 
+		return $this;
+	}
+
+	/**
+	 * Delete statement.
+	 *
+	 * @return $this
+	 */
+	public function delete()
+	{
+		$this->_query['delete'] = '';
+
+		return $this;
+	}
+
+	/**
+	 * Insert statement.
+	 * Example:
+	 * insert(array('column1' => 'some value'))
+	 *
+	 * @param array $columns
+	 * @return $this
+	 */
 	public function insert(array $columns)
 	{
 		$this->_query['insert'] = $columns;
@@ -56,6 +111,14 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 	public function rightJoin($target) { }
 	public function join($target) { }
 
+	/**
+	 * Adds a condition (and first operator second).
+	 *
+	 * @param mixed $first
+	 * @param string $operator
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function condition($first, $operator, $second)
 	{
 		$this->_query['condition'] = (object)array(
@@ -67,6 +130,14 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		return $this;
 	}
 
+	/**
+	 * Adds an "or" condition (or first operator second).
+	 *
+	 * @param mixed $first
+	 * @param string $operator
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function orCondition($first, $operator, $second)
 	{
 		$this->_query['orCondition'] = (object)array(
@@ -78,31 +149,73 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		return $this;
 	}
 
+	/**
+	 * Adds an equal condition (and first = second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function equals($first, $second)
 	{
 		return $this->condition($first, '=', $second);
 	}
 
+	/**
+	 * Adds an "or" equal condition (or first = second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function orEquals($first, $second)
 	{
 		return $this->orCondition($first, '=', $second);
 	}
 
+	/**
+	 * Adds a greater than condition (and first > second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function greaterThan($first, $second)
 	{
 		return $this->condition($first, '>', $second);
 	}
 
+	/**
+	 * Adds an "or" greater than condition (or first > second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function orGreaterThan($first, $second)
 	{
 		return $this->orCondition($first, '>', $second);
 	}
 
+	/**
+	 * Adds a smaller than condition (and first < second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function smallerThan($first, $second)
 	{
 		return $this->condition($first, '<', $second);
 	}
 
+	/**
+	 * Adds an "or" smaller than condition (or first < second).
+	 *
+	 * @param mixed $first
+	 * @param mixed $second
+	 * @return $this
+	 */
 	public function orSmallerThan($first, $second)
 	{
 		return $this->orCondition($first, '<', $second);
@@ -159,6 +272,8 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 			$this->_query['exists'] = $callback($query);
 		else
 			$this->_query['exists'] = (string)$callback;
+
+		return $this;
 	}
 
 	public function orExists($callback)
@@ -170,11 +285,18 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 			$this->_query['exists'] = $callback($query);
 		else
 			$this->_query['exists'] = (string)$callback;
+
+		return $this;
 	}
 
 	public function groupStart($name){ }
 	public function groupEnd($name) { }
 
+	/**
+	 * Resets the instance.
+	 *
+	 * @return $this|iQueryBuilder
+	 */
 	public function reset()
 	{
 		$this->_query = array();
@@ -197,6 +319,14 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 				foreach ($data as $colName => $val)
 					$params[":{$colName}"] = $val;
 			}
+			else if ($operation == 'update')
+			{
+				foreach ($data as $colName => $val)
+				{
+					$id = md5($colName);
+					$params[":{$id}"] = $val;
+				}
+			}
 		}
 
 		return !$oneRow ? $this->query($this->generate(), $params) : $this->queryOne($this->generate(), $params);
@@ -208,27 +338,38 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		$table = '';
 
 		$previousOperation = '';
-		foreach ($this->_query as $operation => $data)
+		foreach ($this->_query as $operation => &$data)
 		{
 			switch ($operation)
 			{
+				case 'table':
+					$table = "`{$data}`";
+					break;
+
 				case 'select':
 					$columns = is_array($data) && count($data) ? implode(', ', $data) : '*';
 					$generated = "select {$columns}\nfrom {$table}\n";
 					break;
-				case 'table':
-					$table = "`{$data}`";
+				case 'delete':
+					$generated = "delete from {$table}\n";
 					break;
+				case 'insert':
+					$generated = $this->generateInsert($table, $data);
+					break;
+				case 'update':
+					$generated = $this->generateUpdate($table, $data);
+					break;
+
 				case 'condition':
 					$id = md5($data->second);
-					if ($previousOperation == 'select')
+					if (in_array($previousOperation, array('select', 'delete', 'update')))
 						$generated .= "where (\n`{$data->first}` {$data->operator} :{$id}\n";
 					else
 						$generated .= "and `{$data->first}` {$data->operator} :{$id}\n";
 					break;
 				case 'orCondition':
 					$id = md5($data->second);
-					if ($previousOperation == 'select')
+					if (in_array($previousOperation, 'select', 'delete', 'update'))
 						$generated .= "where (\n`{$data->first}` {$data->operator} :{$id}\n";
 					else
 						$generated .= "or `{$data->first}` {$data->operator} :{$id}\n";
@@ -242,9 +383,6 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 					break;
 				case 'createTable':
 					$generated = $this->generateCreateTable($data->table, $data->settings, $data->columns);
-					break;
-				case 'insert':
-					$generated = $this->generateInsert($table, $data);
 					break;
 				default:
 					continue;
@@ -282,7 +420,7 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 		return $generated;
 	}
 
-	protected function generateInsert($table, $columns)
+	protected function generateInsert($table, array $columns)
 	{
 		$columnNames = array_keys($columns);
 		foreach ($columnNames as &$col)
@@ -296,11 +434,20 @@ class MySqlQueryBuilder extends MySqlConnection implements iQueryBuilder
 
 		$data = implode(', ', $data);
 
+		return "insert into {$table} ({$columnNames}) values ({$data})";
+	}
 
-		$generated = "insert into {$table} ({$columnNames}) values ({$data})";
+	protected function generateUpdate($table, array $columns)
+	{
+		$values = array();
+		foreach ($columns as $name => $data)
+		{
+			$id = md5($name);
+			$values[] = "`{$name}` = :{$id}";
+		}
 
-		var_dump($generated);
+		$values = implode(', ', $values);
 
-		return $generated;
+		return "update {$table} set {$values}\n";
 	}
 }

@@ -6,8 +6,15 @@ class User extends Model
 {
 	protected $_table = 'users';
 
-	public function save() {}
-	public function delete() {}
+	public function save()
+	{
+		parent::save();
+	}
+
+	public function delete()
+	{
+		parent::delete();
+	}
 
 	public function load()
 	{

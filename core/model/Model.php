@@ -22,6 +22,11 @@ abstract class Model extends Map
 	 */
 	protected $_table;
 
+	/**
+	 * @param null|int $id
+	 * @param Application $app
+	 * @param bool $load load data from database?
+	 */
 	public function __construct($id = null, Application $app, $load = true)
 	{
 		$this->add('id', $id);
@@ -30,6 +35,11 @@ abstract class Model extends Map
 			$this->load();
 	}
 
+	/**
+	 * Loads model's data from database.
+	 *
+	 * @return $this
+	 */
 	public function load()
 	{
 		$query = $this->app()->queryBuilder()->reset();
@@ -39,22 +49,44 @@ abstract class Model extends Map
 		return $this;
 	}
 
+	/**
+	 * Saves the model to database.
+	 *
+	 * @return $this
+	 */
 	public function save()
 	{
+		$query = $this->app()->queryBuilder()->reset();
+		$data = $this->toArray();
+		if (isset($data['id']))
+			unset($data['id']);
 
+		$query->table($this->_table)->update($data)->equals('id', $this->id())->execute();
+
+		return $this;
 	}
 
+	/**
+	 * Deletes the model from database.
+	 */
 	public function delete()
 	{
+		$query = $this->app()->queryBuilder()->reset();
+		$query->table($this->_table)->delete()->equals('id', $this->id())->execute();
 
+		return $this;
 	}
 
+	/**
+	 * Creates the model in database.
+	 *
+	 * @return $this
+	 */
 	public function create()
 	{
 		if ($this->id())
 			$this->remove('id');
 
-		var_dump($this->toArray());
 		$query = $this->app()->queryBuilder()->reset();
 		$data = $query->table($this->_table)->insert($this->toArray())->execute();
 
