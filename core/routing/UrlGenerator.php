@@ -33,9 +33,16 @@ class UrlGenerator extends nComponent
 	{
 		foreach ($routes as $mappedUrl => $route)
 		{
+			if (is_callable($route))
+			{
+				$this->addRoute($mappedUrl, $mappedUrl);
+				continue;
+			}
+
 			if (is_array($route))
 				$route = (object)$route;
-			if (isset($route->as))
+
+			if (is_object($route) && isset($route->as))
 			{
 				if (isset($route->sameAs) && isset($this->_routes[$route->sameAs]))
 					$this->addRoute($route->as, $this->_routes[$route->sameAs]);

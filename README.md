@@ -59,11 +59,51 @@ You are ready to develop your first Naga project! :)
 
 ##Configuration
 
-TODO
+You can find configuration files in ```app/config``` directory.
+Default files:
+```
+application.php             application config
+cacheconnections.php        cache connection config
+databases.php               database config
+email.php                   email config
+externalclasses.php         external classes config for autoloader
+routes.php                  app routes
+validation.php              validation rules (currently not working)
+```
+
+You can create as much php files as you want here, even in subdirectories. These files will be accessible
+via ```App::config('filename')```. If a file is in a subdirectory, you can access it via ```App::config('directory.subdirectory.file')```.
+You can create json files too.
 
 ##Routing
 
-TODO
+You can define application routes in ```app/config/routes.php```.
+
+A self-explanatory example:
+
+```php
+return array(
+	// url with params, every parameter must follow this pattern: {paramName|regexp}
+	'test/{id|[0-9]+}' => array(
+		/*
+		 * you can generate link with this identifier via App::urlGenerator()->route('home', array('id' => 1))
+		 * or {{ 'test'|url('id:' ~ something.id) }} in twig templates
+		 * see UrlGenerator docs
+		 */
+		'as' => 'test',
+		/*
+		 * http methods: get, post, put, delete
+		 * these can either be a closure or name of a function
+		 * the function will be called with first argument containing route parameters
+		 * parsed from uri
+		 */
+		'get' => '\App\Controller\TestController@getTest',
+		'post' => function($params) {
+			return 'These are our params: ' . implode(', ', $params);
+		}
+	)
+)
+```
 
 ##Actions, Controllers, Templates and Views
 

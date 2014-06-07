@@ -2,17 +2,29 @@
 
 namespace Naga\Core\Debug;
 
+use Naga\Core\Debug\Log\iLogger;
+
 interface iProfiler
 {
 	/**
+	 * Enables profiling with iProfiler globally.
+	 */
+	public static function enableGlobally();
+
+	/**
+	 * Disables profiling with iProfiler globally.
+	 */
+	public static function disableGlobally();
+
+	/**
 	 * Enables profiling with iProfiler.
 	 */
-	public static function enable();
+	public function enable();
 
 	/**
 	 * Disables profiling with iProfiler.
 	 */
-	public static function disable();
+	public function disable();
 
 	/**
 	 * Creates a timer with the specified name. Also starts it if $start = true.
@@ -22,7 +34,7 @@ interface iProfiler
 	 * @param   string  $name
 	 * @param   bool    $start start the timer?
 	 * @param   bool    $overwrite overwrite existing timer?
-	 * @return  iProfiler
+	 * @return  $this
 	 */
 	public function createTimer($name, $start = true, $overwrite = true);
 
@@ -30,7 +42,7 @@ interface iProfiler
 	 * Starts a timer.
 	 *
 	 * @param string $name
-	 * @return iProfiler
+	 * @return $this
 	 */
 	public function startTimer($name);
 
@@ -38,7 +50,7 @@ interface iProfiler
 	 * Pause a timer.
 	 *
 	 * @param string $name
-	 * @return iProfiler
+	 * @return $this
 	 */
 	public function pauseTimer($name);
 
@@ -46,7 +58,7 @@ interface iProfiler
 	 * Stops a timer.
 	 *
 	 * @param string $name
-	 * @return iProfiler
+	 * @return $this
 	 */
 	public function stopTimer($name);
 
@@ -75,4 +87,30 @@ interface iProfiler
 	 * @return  string|float    result
 	 */
 	public function timerResult($name, $measure = Timer::Dynamic, $roundPrecision = 4);
+
+	/**
+	 * Outputs generated log from timer results.
+	 */
+	public function dispatchLog();
+
+	/**
+	 * Gets generated log from timer results.
+	 *
+	 * @return string
+	 */
+	public function generateLog();
+
+	/**
+	 * Sets iLogger instance.
+	 *
+	 * @param iLogger $logger
+	 */
+	public function setLogger(iLogger $logger);
+
+	/**
+	 * Gets profiler instance name.
+	 *
+	 * @return string
+	 */
+	public function name();
 }

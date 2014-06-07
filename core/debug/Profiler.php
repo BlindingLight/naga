@@ -2,14 +2,21 @@
 
 namespace Naga\Core\Debug;
 
+use Naga\Core\Debug\Log\iLogger;
+use Naga\Core\Debug\Log\JsConsoleLogger;
 use Naga\Core\nComponent;
 
 class Profiler extends nComponent implements iProfiler
 {
 	/**
-	 * @var bool enable profiling?
+	 * @var bool enable profiling globally
 	 */
-	private static $_enabled = false;
+	private static $_enabledGlobally = false;
+
+	/**
+	 * @var bool enable profiling per instance
+	 */
+	private $_enabled = true;
 
 	/**
 	 * @var string Profiler instance name
@@ -25,29 +32,28 @@ class Profiler extends nComponent implements iProfiler
 	 * Construct.
 	 *
 	 * @param   string  $name
+	 * @param   iLogger $logger
 	 * @throws  \Exception
 	 */
-	public function __construct($name)
+	public function __construct($name, iLogger $logger = null)
 	{
 		if (is_array($name) || !(string)$name)
 			throw new \Exception('Invalid name specified for Profiler instance: ' . gettype($name));
 
 		$this->_name = (string)$name;
+
+		if ($logger instanceof iLogger)
+			$this->setLogger($logger);
+		else
+			$this->setLogger(new JsConsoleLogger());
 	}
 
 	/**
-	 * Creates a timer with the specified name. Also starts it if $start = true.
-	 * If there is an existing timer with $name and $overwrite = true, resets it silently,
-	 * else triggers an E_USER_NOTICE level error.
-	 *
-	 * @param   string  $name
-	 * @param   bool    $start start the timer?
-	 * @param   bool    $overwrite overwrite existing timer?
-	 * @return  iProfiler
+	 * @see iProfiler
 	 */
 	public function createTimer($name, $start = true, $overwrite = true)
 	{
-		if (!self::$_enabled)
+		if (!$this->_enabled)
 			return $this;
 
 		if (isset($this->_timers[$name]))
@@ -67,42 +73,33 @@ class Profiler extends nComponent implements iProfiler
 	}
 
 	/**
-	 * Starts a timer.
-	 *
-	 * @param string $name
-	 * @return Profiler
+	 * @see iProfiler
 	 */
 	public function startTimer($name)
 	{
-		if (self::$_enabled)
+		if ($this->_enabled)
 			$this->timer($name)->start();
 
 		return $this;
 	}
 
 	/**
-	 * Pause a timer.
-	 *
-	 * @param string $name
-	 * @return Profiler
+	 * @see iProfiler
 	 */
 	public function pauseTimer($name)
 	{
-		if (self::$_enabled)
+		if ($this->_enabled)
 			$this->timer($name)->pause();
 
 		return $this;
 	}
 
 	/**
-	 * Stops a timer.
-	 *
-	 * @param string $name
-	 * @return Profiler
+	 * @see iProfiler
 	 */
 	public function stopTimer($name)
 	{
-		if (self::$_enabled)
+		if ($this->_enabled)
 			$this->timer($name)->stop();
 
 		return $this;
@@ -124,9 +121,7 @@ class Profiler extends nComponent implements iProfiler
 	}
 
 	/**
-	 * Gets all iTimer instances in an array.
-	 *
-	 * @return iTimer[]
+	 * @see iProfiler
 	 */
 	public function timers()
 	{
@@ -134,15 +129,11 @@ class Profiler extends nComponent implements iProfiler
 	}
 
 	/**
-	 * Gets all iTimer results in an array.
-	 *
-	 * @param int $measure
-	 * @param int $roundPrecision
-	 * @return array
+	 * @see iProfiler
 	 */
 	public function timerResults($measure = Timer::Dynamic, $roundPrecision = 4)
 	{
-		if (!self::$_enabled)
+		if (!$this->_enabled)
 			return array();
 
 		$results = array();
@@ -153,34 +144,118 @@ class Profiler extends nComponent implements iProfiler
 	}
 
 	/**
-	 * Gets timer result in specified time measurement.
-	 *
-	 * @param   string          $name           timer name
-	 * @param   int             $measure        time measure
-	 * @param   int             $roundPrecision round precision
-	 * @return  string|float    result
+	 * @see iProfiler
 	 */
 	public function timerResult($name, $measure = Timer::Dynamic, $roundPrecision = 4)
 	{
-		if (!self::$_enabled)
+		if (!$this->_enabled)
 			return null;
 
 		return $this->timer($name)->result($measure, $roundPrecision);
 	}
 
 	/**
-	 * Enables profiling with iProfiler.
+	 * @see iProfiler
 	 */
-	public static function enable()
+	public function dispatchLog()
 	{
-		self::$_enabled = true;
+		if (!$this->_enabled)
+			return $this;
+
+		foreach ($this->timerResults() as $timerName => $result)
+		{
+			$this->logger()->debug("{$timerName}: {$result}");
+		}
+
+		$this->logger()->dispatch();
+
+		return $this;
 	}
 
 	/**
-	 * Disables profiling with iProfiler.
+	 * @see iProfiler
 	 */
-	public static function disable()
+	public function generateLog()
 	{
-		self::$_enabled = false;
+		if (!self::$_enabledGlobally || !$this->_enabled)
+			return '';
+
+		foreach ($this->timerResults() as $timerName => $result)
+		{
+			$this->logger()->debug("{$timerName}: {$result}");
+		}
+
+		return $this->logger()->generate();
+	}
+
+	/**
+	 * Sets iLogger instance.
+	 *
+	 * @param iLogger $logger
+	 */
+	public function setLogger(iLogger $logger)
+	{
+		$logger->group('Profiler ' . str_replace('\\', '.', $this->name()));
+		$this->registerComponent('logger', $logger);
+	}
+
+	/**
+	 * Gets iLogger instance.
+	 *
+	 * @return iLogger
+	 * @throws \RuntimeException
+	 */
+	public function logger()
+	{
+		try
+		{
+			return $this->component('logger');
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException("Can't get iLogger instance of profiler {$this->name()}.");
+		}
+	}
+
+	/**
+	 * Gets profiler instance name.
+	 *
+	 * @return string
+	 */
+	public function name()
+	{
+		return $this->_name;
+	}
+
+	/**
+	 * @see iProfiler
+	 */
+	public static function enableGlobally()
+	{
+		self::$_enabledGlobally = true;
+	}
+
+	/**
+	 * @see iProfiler
+	 */
+	public static function disableGlobally()
+	{
+		self::$_enabledGlobally = false;
+	}
+
+	/**
+	 * @see iProfiler
+	 */
+	public function enable()
+	{
+		$this->_enabled = true;
+	}
+
+	/**
+	 * @see iProfiler
+	 */
+	public function disable()
+	{
+		$this->_enabled = false;
 	}
 }

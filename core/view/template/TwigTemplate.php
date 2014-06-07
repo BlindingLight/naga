@@ -4,6 +4,7 @@ namespace Naga\Core\View\Template;
 
 use Naga\Core\Application;
 use Naga\Core\Config\ConfigBag;
+use Naga\Core\Exception\ConfigException;
 use Naga\Core\nComponent;
 
 /**
@@ -32,11 +33,28 @@ class TwigTemplate extends nComponent implements iTemplate
 	/**
 	 * @var string template root directory
 	 */
-	private $_templateRoot = '';
+	private $_templateRoot = '../app/template';
 
-	public function __construct(ConfigBag $config, Application $app)
+	/**
+	 * Construct.
+	 *
+	 * @param ConfigBag|array|null $config
+	 * @param Application|string|null $appInstance
+	 */
+	public function __construct($config = null, $appInstance = null)
 	{
-		$this->_templateRoot = $config->get('templates')->root . '/';
+		// getting app instance
+		if (!($appInstance instanceof Application))
+			$appInstance = is_string($appInstance) ? Application::instance($appInstance) : Application::instance();
+
+		// getting config
+		if ($config instanceof ConfigBag)
+			$this->_templateRoot = $config->get('templates')->root . '/';
+		else if (is_array($config) && isset($config['templateRoot']))
+			$this->_templateRoot =  $config['templateRoot'];
+		else
+			$this->_templateRoot = $appInstance->config('application')->get('templates')->root;
+
 		$loader = new \Twig_Loader_Filesystem($this->_templateRoot);
 		$this->_twig = new \Twig_Environment(
 			$loader,
@@ -128,17 +146,19 @@ class TwigTemplate extends nComponent implements iTemplate
 		return isset($this->_data[$name]) ? $this->_data[$name] : $default;
 	}
 
-	/**
+	/**s
 	 * Generates template output.
 	 *
+	 * @param string|null $templatePath override template path
 	 * @return string
+	 * @throws ConfigException
 	 */
-	public function generate()
+	public function generate($templatePath = null)
 	{
-		if (!$this->_templatePath)
-			$this->_templatePath = 'default.twig';
+		if (!$this->_templatePath && !$templatePath)
+			throw new ConfigException('Missing template path for view: ' . __CLASS__);
 
-		return $this->_twig->render($this->_templatePath, $this->_data);
+		return $this->_twig->render($templatePath ? $templatePath : $this->_templatePath, $this->_data);
 	}
 
 	/**

@@ -85,6 +85,9 @@ class Router extends nComponent
 		$route->parameters = $this->getParameters($this->_matchedMappedUrl, $route->parameters);
 		$route->method = $this->request()->httpMethodString();
 
+		if (isset($route->callable) && is_callable($route->callable))
+			return call_user_func_array($route->callable, array_merge(array($route->method), $route->parameters));
+
 		if (!isset($route->{$route->method}))
 			$route->method = 'get';
 
@@ -159,7 +162,17 @@ class Router extends nComponent
 			$matches = array();
 			if (preg_match($pattern, $uri, $matches))
 			{
-				if (isset($this->_routes[$routeName]->domain)
+				if (is_callable($this->_routes[$routeName]))
+				{
+					$matches['rootUriPart'] = array_shift($matches);
+					$this->_matchedMappedUrl = $mappedUrl;
+					$this->profiler()->stopTimer('matchUri');
+					return (object)array(
+						'callable' => $this->_routes[$routeName],
+						'parameters' => $matches
+					);
+				}
+				else if (isset($this->_routes[$routeName]->domain)
 					&& !$this->domainCheck($this->request()->domainName(), $this->_routes[$routeName]->domain))
 				{
 					continue;
@@ -174,6 +187,16 @@ class Router extends nComponent
 		}
 
 		$route = $this->_routes[$this->_defaultRoute];
+
+		if (is_callable($route))
+		{
+			$this->profiler()->stopTimer('matchUri');
+			return (object)array(
+				'callable' => $route,
+				'parameters' => array()
+			);
+		}
+
 		$route->parameters = array();
 		$this->profiler()->stopTimer('matchUri');
 		return $route;
@@ -251,6 +274,7 @@ class Router extends nComponent
 	 *
 	 * @param string $mappedUrl
 	 * @param \Callable|string $route
+	 * @return $this
 	 * @throws Exception\Routing\RouteAlreadyExistsException
 	 */
 	public function addRoute($mappedUrl, $route)
@@ -259,7 +283,17 @@ class Router extends nComponent
 			throw new Exception\Routing\RouteAlreadyExistsException("Can't add route '$mappedUrl', already exists.");
 
 		$this->profiler()->createTimer('addRoute');
+
+		// if route is callable, we just add it as it is
+		if (is_callable($route))
+		{
+			$this->_urlMappings[$mappedUrl] = $mappedUrl;
+			$this->_routes[$mappedUrl] = $route;
+			return $this;
+		}
+
 		$route = (object)$route;
+
 		foreach ($this->request()->httpMethodList() as $method)
 		{
 			if (isset($route->{$method}) && !is_callable($route->{$method}))
@@ -279,11 +313,13 @@ class Router extends nComponent
 		{
 			$this->_routes[$routeName] = $this->_routes[$route->sameAs];
 			$this->profiler()->stopTimer('addRoute');
-			return;
+			return $this;
 		}
 
 		$this->_routes[$routeName] = $route;
 		$this->profiler()->stopTimer('addRoute');
+
+		return $this;
 	}
 
 	/**

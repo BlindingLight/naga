@@ -2,6 +2,8 @@
 
 namespace Naga\Core;
 
+use Naga\Core\Debug\Log\iLogger;
+use Naga\Core\Debug\Log\JsConsoleLogger;
 use Naga\Core\Debug\Profiler;
 use Naga\Core\Debug\iProfiler;
 use Naga\Core\Exception;
@@ -35,15 +37,45 @@ abstract class nComponent implements iComponent
 	private $_profiler;
 
 	/**
+	 * @var iLogger iLogger instance
+	 */
+	private $_logger;
+
+	/**
+	 * Gets the component's iLogger instance. If iLogger instance doesn't exist,
+	 * creates a new JsConsoleLogger instance and returns that.
+	 *
+	 * @return iLogger
+	 */
+	public function logger()
+	{
+		if (empty($this->_logger))
+			$this->_logger = new JsConsoleLogger(get_class($this));
+
+		return $this->_logger;
+	}
+
+	/**
+	 * Sets the iLogger instance. This way you can register your implementation of iLogger
+	 * interface.
+	 *
+	 * @param iLogger $logger
+	 */
+	public function setLogger(iLogger $logger)
+	{
+		$this->_logger = $logger;
+	}
+
+	/**
 	 * Gets the component's iProfiler instance. If iProfiler instance doesn't exist,
-	 * creates it and returns that.
+	 * creates a new Profiler instance and returns that.
 	 *
 	 * @return iProfiler
 	 */
 	public function profiler()
 	{
 		if (empty($this->_profiler))
-			$this->_profiler = new Profiler('class');
+			$this->_profiler = new Profiler(get_class($this));
 
 		return $this->_profiler;
 	}
@@ -54,7 +86,7 @@ abstract class nComponent implements iComponent
 	 *
 	 * @param iProfiler $profiler
 	 */
-	public function addProfiler(iProfiler $profiler)
+	public function setProfiler(iProfiler $profiler)
 	{
 		$this->_profiler = $profiler;
 	}

@@ -26,10 +26,13 @@ abstract class Action extends nComponent
 	 * Construct.
 	 *
 	 * @param array $params
+	 * @param View $view
 	 */
-	public function __construct(array $params)
+	public function __construct(array $params = array(), View $view = null)
 	{
 		$this->_params = $params;
+		if ($view)
+			$this->_view = $view;
 	}
 
 	/**
@@ -52,6 +55,16 @@ abstract class Action extends nComponent
 	public function set($name, $value)
 	{
 		$this->_params[$name] = $value;
+	}
+
+	/**
+	 * Gets all parameters.
+	 *
+	 * @return array
+	 */
+	public function params()
+	{
+		return $this->_params;
 	}
 
 	/**
