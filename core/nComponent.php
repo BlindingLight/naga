@@ -50,7 +50,7 @@ abstract class nComponent implements iComponent
 	public function logger()
 	{
 		if (empty($this->_logger))
-			$this->_logger = new JsConsoleLogger(get_class($this));
+			$this->_logger = new JsConsoleLogger(str_replace('\\', '.', get_class($this)));
 
 		return $this->_logger;
 	}
