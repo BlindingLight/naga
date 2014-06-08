@@ -45,15 +45,23 @@ class TwigTemplate extends nComponent implements iTemplate
 	{
 		// getting app instance
 		if (!($appInstance instanceof Application))
-			$appInstance = is_string($appInstance) ? Application::instance($appInstance) : Application::instance();
+			$app = is_string($appInstance) ? Application::instance($appInstance) : Application::instance();
+		else
+			$app = $appInstance;
 
 		// getting config
 		if ($config instanceof ConfigBag)
 			$this->_templateRoot = $config->get('templates')->root . '/';
 		else if (is_array($config) && isset($config['templateRoot']))
+		{
 			$this->_templateRoot =  $config['templateRoot'];
+			$config = $app->config('application');
+		}
 		else
-			$this->_templateRoot = $appInstance->config('application')->get('templates')->root;
+		{
+			$this->_templateRoot = $app->config('application')->get('templates')->root;
+			$config = $app->config('application');
+		}
 
 		$loader = new \Twig_Loader_Filesystem($this->_templateRoot);
 		$this->_twig = new \Twig_Environment(
