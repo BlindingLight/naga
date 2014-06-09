@@ -214,11 +214,25 @@ class Router extends nComponent
 		$this->profiler()->createTimer('domainCheck');
 		$domainParts = explode('.', $domain);
 		$expectedParts = explode('.', $expected);
+		$lastExpectedPart = $expectedParts[count($expectedParts) - 1];
+		$domainPartsCount = count($domainParts);
+		$expectedPartsCount = count($expectedParts);
 
-		if (count($domainParts) != count($expectedParts))
+		if ($domainPartsCount < $expectedPartsCount)
 		{
 			$this->profiler()->stopTimer('domainCheck');
 			return false;
+		}
+
+		if ($lastExpectedPart != '*' && $domainPartsCount != $expectedPartsCount)
+		{
+			$this->profiler()->stopTimer('domainCheck');
+			return false;
+		}
+		else if ($lastExpectedPart == '*' && $expectedPartsCount < $domainPartsCount)
+		{
+			$this->profiler()->stopTimer('domainCheck');
+			return true;
 		}
 
 		foreach ($domainParts as $idx => $domainPart)
