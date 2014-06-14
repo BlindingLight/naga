@@ -116,7 +116,7 @@ if ($app->config()->exists('cacheconnections'))
 $app->profiler()->stopTimer('Initializing CacheManager and adding cache connections');
 
 // database connections
-$app->profiler()->createTimer('Initializing DatabaseManager and adding database connections');
+$app->profiler()->createTimer('Initializing DatabaseManager and adding database connections and QueryBuilder');
 $app->database = new Naga\Core\Database\DatabaseManager();
 if ($app->config()->exists('databases'))
 {
@@ -125,8 +125,21 @@ if ($app->config()->exists('databases'))
 			$app->config('databases')->toArray()
 		)
 	);
+
+	$db = $app->config('databases')->toArray();
+	$db = $db['default'];
+	$app->queryBuilder = new \Naga\Core\Database\MySqlQueryBuilder(
+		'default',
+		$db->host,
+		$db->port,
+		$db->user,
+		$db->password,
+		$db->database,
+		$db->persistent,
+		$db->lazyConnect
+	);
 }
-$app->profiler()->stopTimer('Initializing DatabaseManager and adding database connections');
+$app->profiler()->stopTimer('Initializing DatabaseManager and adding database connections and QueryBuilder');
 
 // SwiftMailer config
 $app->profiler()->createTimer('Initializing SwiftMailer');

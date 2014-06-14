@@ -73,7 +73,10 @@ class User extends Model
 					),
 					'email' => (object)array(
 					    'type' => 'varchar',
-					    'length' => '265',
+						// unfortunately MySQL won't allow 255+ chars to index
+						// because it assumes utf-8 chars are 3 bytes long
+						// and it's limit is 767 bytes, so 256*3 = 768 :(
+					    'length' => '255',
 					    'unique' => true,
 					    'index' => 'btree',
 						'null' => false
