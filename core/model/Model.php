@@ -104,7 +104,6 @@ abstract class Model extends Map
 		$query = $this->app()->queryBuilder()->reset();
 		$query->createTable($this->_table, $settings, $columns);
 
-		echo $query->generate();
 		$query->execute();
 	}
 
