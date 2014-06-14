@@ -60,6 +60,12 @@ $app->profiler()->createTimer('Initializing SessionManager');
 $app->session = new \Naga\Core\Session\SessionManager(new \Naga\Core\Session\Storage\Native());
 $app->profiler()->stopTimer('Initializing SessionManager');
 
+// hasher init
+$app->profiler()->createTimer('Initializing Hasher');
+$app->hasher = new \Naga\Core\Hashing\Hasher();
+$app->hasher()->setAlgorithm(new \Naga\Core\Hashing\Algorithm\BaseSha1());
+$app->profiler()->stopTimer('Initializing Hasher');
+
 // auth init
 $app->profiler()->createTimer('Initializing Auth');
 $app->auth = new \Naga\Core\Auth\Auth($app->session()->storage());

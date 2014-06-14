@@ -6,26 +6,54 @@ class User extends Model
 {
 	protected $_table = 'users';
 
+	/**
+	 * Gets whether user password matches specified password.
+	 *
+	 * @param string $password
+	 * @return bool
+	 */
+	public function passwordMatch($password)
+	{
+		$generated = $this->app()->hasher()->algorithm()->hash($password, $this->salt);
+
+		return $generated === $password;
+	}
+
+	/**
+	 * @see Model
+	 */
 	public function save()
 	{
 		parent::save();
 	}
 
+	/**
+	 * @see Model
+	 */
 	public function delete()
 	{
 		parent::delete();
 	}
 
+	/**
+	 * @see Model
+	 */
 	public function load()
 	{
 		return parent::load();
 	}
 
+	/**
+	 * @see Model
+	 */
 	public function create()
 	{
 		return parent::create();
 	}
 
+	/**
+	 * @see Model
+	 */
 	public function install($columns = array(), $settings = array())
 	{
 		parent::install(
