@@ -126,6 +126,7 @@ if ($app->config()->exists('databases'))
 		)
 	);
 
+	// TODO: create query builder instance for each database connection
 	$db = $app->config('databases')->toArray();
 	$db = $db['default'];
 	$app->queryBuilder = new \Naga\Core\Database\MySqlQueryBuilder(
