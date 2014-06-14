@@ -2,6 +2,7 @@
 
 namespace Naga\Core\Auth;
 
+use Naga\Core\Facade\Events;
 use Naga\Core\Exception;
 use Naga\Core\Exception\Auth\DataCorruptedException;
 use Naga\Core\Session\Storage\iSessionStorage;
@@ -117,9 +118,12 @@ class Auth extends nComponent
 		if (!$condition)
 			return false;
 
+		Events::fire('auth.beforeLogin', array(&$id, &$data, &$condition, &$setDefault));
 		$user = new AuthUser($id);
 		$user->mergeWith($data);
 		$this->addUserInstance($user, $setDefault);
+		$this->storeSessionData();
+		Events::fire('auth.afterLogin', array($id, $data, $condition, $setDefault));
 
 		return true;
 	}
@@ -181,7 +185,7 @@ class Auth extends nComponent
 	}
 
 	/**
-	 * Stores the auth data in session. Don't forget to call it before use exit().
+	 * Stores the auth data in session. Don't forget to call it before using exit().
 	 * Application->redirect() automatically calls this method.
 	 */
 	public function storeSessionData()

@@ -34,7 +34,7 @@ class Events extends nComponent
 	 * @param bool              $queued tells whether $task is queued
 	 * @return $this
 	 */
-	private function lowPriorityListen($eventName, $task, $params = array(), $priority = 1, $queued = false)
+	protected function lowPriorityListen($eventName, $task, $params = array(), $priority = 1, $queued = false)
 	{
 		// handling wildcard
 		$events = array($eventName);

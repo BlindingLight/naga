@@ -7,15 +7,12 @@ use Naga\Core\Exception;
 class Router extends Facade
 {
 	/**
-	 * @var string component name
+	 * @see Facade
 	 */
 	protected static $_accessor = 'router';
 
 	/**
-	 * Sets the default route. This will be used if no match found.
-	 *
-	 * @param string $routeName
-	 * @throws Exception\Routing\RouteNotFoundException
+	 * @see \Naga\Core\Routing\Router
 	 */
 	public static function setDefaultRoute($routeName)
 	{
@@ -23,9 +20,7 @@ class Router extends Facade
 	}
 
 	/**
-	 * Gets the default route name.
-	 *
-	 * @return string
+	 * @see \Naga\Core\Routing\Router
 	 */
 	public static function defaultRouteName()
 	{
@@ -33,10 +28,7 @@ class Router extends Facade
 	}
 
 	/**
-	 * Routes the request uri. And returns the executed route function/method result.
-	 *
-	 * @return \Naga\Core\Action\Action|mixed
-	 * @throws Exception\Routing\RouteBadlyConfiguredException
+	 * @see \Naga\Core\Routing\Router
 	 */
 	public static function routeUri()
 	{
@@ -44,12 +36,7 @@ class Router extends Facade
 	}
 
 	/**
-	 * Adds a route. Route must be a callable function or a string with format 'className[at]methodName'.
-	 *
-	 * @param string $mappedUrl
-	 * @param \Callable|string $route
-	 * @return Router
-	 * @throws Exception\Routing\RouteAlreadyExistsException
+	 * @see \Naga\Core\Routing\Router
 	 */
 	public static function addRoute($mappedUrl, $route)
 	{
@@ -57,9 +44,7 @@ class Router extends Facade
 	}
 
 	/**
-	 * Adds multiple routes.
-	 *
-	 * @param array $routes
+	 * @see \Naga\Core\Routing\Router
 	 */
 	public static function addRoutes(array $routes)
 	{

@@ -13,14 +13,15 @@ use Naga\Core\nComponent;
  * See Event class documentation.
  *
  * Installing a module:
- * 1. Place code to app/module/modulename directory
- * 2. Instantiate module in a custom bootstrap.php or basically anywhere
+ * 1. Place code in app/module/modulename directory
+ * 2. Instantiate module in app/bootstrap.php or basically anywhere
  * $app->moduleName = new ModuleName($app);
  * 3. In order to use autocomplete in IDEs, add a static method
  * to your App instance. If you do so, you can access
  * module instance like $app->moduleName()->something() or
  * App::moduleName()->something() otherwise
  * App::component('moduleName')->something
+ * or create a Facade
  *
  * @package Naga\Core\Module
  * @author  BlindingLight<bloodredshade@gmail.com>
