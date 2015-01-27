@@ -63,7 +63,7 @@ You can find configuration files in ```app/config``` directory.
 Default files:
 ```
 application.php             application config
-cacheconnections.php        cache connection config
+cacheconnections.php        cache connections config
 databases.php               database config
 email.php                   email config
 externalclasses.php         external classes config for autoloader
@@ -71,7 +71,7 @@ routes.php                  app routes
 validation.php              validation rules (currently not working)
 ```
 
-You can create as much php files as you want here, even in subdirectories. These files will be accessible
+You can create as many php files as you want here, even in subdirectories. These configs will be accessible
 via ```App::config('filename')```. If a file is in a subdirectory, you can access it via ```App::config('directory.subdirectory.file')```.
 You can create json files too.
 
@@ -86,7 +86,7 @@ return array(
 	// url with params, every parameter must follow this pattern: {paramName|regexp}
 	'test/{id|[0-9]+}' => array(
 		/*
-		 * you can generate link with this identifier via App::urlGenerator()->route('home', array('id' => 1))
+		 * you can generate links with this identifier via App::urlGenerator()->route('home', array('id' => 1))
 		 * or {{ 'test'|url('id:' ~ something.id) }} in twig templates
 		 * see UrlGenerator docs
 		 */
