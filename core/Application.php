@@ -472,12 +472,53 @@ abstract class Application extends nComponent
 	 * Redirects the user to the specified url.
 	 *
 	 * @param string $url
+	 * @param int $statusCode http status code
+	 * @deprecated
 	 */
-	public function redirect($url = '/')
+	public function redirect($url = '/', $statusCode = 302)
 	{
+		static::redirectTo($url, $statusCode, $this);
+	}
+
+	/**
+	 * Redirects the user to the specified url.
+	 * You can use routes here:
+	 *  '@routename;param1:value1|param2:value2'
+	 *
+	 * @param string $url
+	 * @param int    $statusCode
+	 * @param null   $appInstance
+	 * @throws \Exception
+	 */
+	public static function redirectTo($url = '/', $statusCode = 302, $appInstance = null)
+	{
+		$instance = !is_null($appInstance) ? self::instance($appInstance) : self::instance();
+		$instance->finish();
+
+		if (strpos($url, '@') !== false)
+		{
+			$tmp = explode(';', $url);
+			$params = '';
+			if (isset($tmp[1]))
+				$params = $tmp[1];
+
+			$url = $instance->urlGenerator()->route(str_replace('@', '', $tmp[0]), $params);
+		}
+
+		http_response_code($statusCode);
 		header('Location: ' . $url);
-		$this->finish();
+
 		exit();
+	}
+
+	/**
+	 * Sets response http status code.
+	 *
+	 * @param int $statusCode
+	 */
+	public static function setResponseStatusCode($statusCode)
+	{
+		http_response_code($statusCode);
 	}
 
 	/**

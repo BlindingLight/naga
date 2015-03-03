@@ -22,6 +22,24 @@ interface iLogger extends iComponent
 	const Alert = 1;
 	// system is unusable
 	const Emergency = 0;
+	
+	// console colors
+	const Black = '0;30';
+	const DarkGrey = '0;30';
+	const Blue = '0;34';
+	const LightBlue = '0;34';
+	const Green = '1;32';
+	const LightGreen = '1;32';
+	const Cyan = '0;36';
+	const LightCyan = '0;36';
+	const Red = '1;31';
+	const LightRed = '0;31';
+	const Purple = '1;35';
+	const LightPurple = '0;35';
+	const Brown = '1;33';
+	const Yellow = '0;33';
+	const LightGrey = '0;37';
+	const White = '0;37';
 
 	/**
 	 * Generates output from stored log messages.
