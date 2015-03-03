@@ -136,7 +136,7 @@ class Config extends nComponent
 	 * Gets a config.
 	 *
 	 * @param $name
-	 * @return callable|nComponent
+	 * @return \Naga\Core\Config\ConfigBag
 	 * @throws NotExistsException
 	 */
 	public function getConfigBag($name)
