@@ -1,8 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../core/iComponent.php');
-require_once(__DIR__ . '/../core/nComponent.php');
-require_once(__DIR__ . '/../core/Autoloader.php');
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $autoloader = new \Naga\Core\Autoloader();
 $autoloader->setRootDirectory(__DIR__ . '/..');
@@ -32,6 +30,13 @@ $app->config = new \Naga\Core\Config\Config($app->fileSystem());
 $app->config()->getFilesInDirectory(__DIR__ . '/../app/config', 'json');
 $app->config()->getFilesInDirectory(__DIR__ . '/../app/config', 'php');
 
+// display errors and error reporting
+if ($app->config('application')->get('debug'))
+{
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL | E_STRICT);
+}
+
 // enable profiling
 if ($app->config('application')->get('debug'))
 	\Naga\Core\Debug\Profiler::enableGlobally();
@@ -54,6 +59,9 @@ $autoloader->addExternalResolvers(
 	$app->config('externalclasses')->get('resolvers')
 );
 $app->profiler()->stopTimer('Configuring external classes');
+
+// validator init
+$app->validator = new \Naga\Core\Validation\Validator();
 
 // session init
 $app->profiler()->createTimer('Initializing SessionManager');
@@ -159,7 +167,9 @@ if ($app->config()->exists('email'))
 	foreach ($app->config('email')->toArray() as $connectionName => $props)
 	{
 		$className = $props->connectionClass;
+		$app->profiler()->createTimer("Adding connection {$connectionName}.");
 		$conn = new $className((object)$props);
+		$app->profiler()->stopTimer("Adding connection {$connectionName}.");
 		$app->email()->addConnection($connectionName, $conn);
 	}
 }

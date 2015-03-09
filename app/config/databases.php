@@ -4,7 +4,7 @@
 // the connection name (array key) will always be passed as first argument
 return array(
 	'default' => (object)array(
-		'type' => '\Naga\Core\Database\Connection\PostgreSql\PgSqlConnection',
+		'type' => '\Naga\Core\Database\Connection\PostgreSQL\PgSqlConnection',
 		'host' => '127.0.0.1',
 		'port' => 5432,
 		'user' => '',
