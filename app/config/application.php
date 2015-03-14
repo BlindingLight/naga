@@ -7,6 +7,12 @@ return array(
 	// debug mode
 	'debug' => true,
 
+	// error reporting level if debug is true
+	'errorReportingLevel' => E_ALL | E_STRICT,
+
+	// start session automatically
+	'autoStartSession' => false,
+
 	// default route if user is not logged in
 	'defaultRoute' => 'home',
 	// default route if user is logged in
