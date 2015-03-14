@@ -1,188 +1,44 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+$baseDir = __DIR__ . '/bootstrap/';
 
-$autoloader = new \Naga\Core\Autoloader();
-$autoloader->setRootDirectory(__DIR__ . '/..');
+// checking if we need to regenerate _generated.php (php bootstrap.php --force)
+if ((!isset($argv[1]) || $argv[1] != 'update') && file_exists("{$baseDir}_generated.php"))
+	require_once "{$baseDir}_generated.php";
 
-spl_autoload_register(
-	function($className) use($autoloader)
-	{
-		$autoloader->autoload($className);
-	},
-	true,
-	true
+// bootstrap files to load (ordered list)
+$loadFiles = array(
+	'autoloader',
+	'app',
+	'events',
+	'filesystem',
+	'config',
+	'debug',
+	'validator',
+	'session',
+	'hasher',
+	'auth',
+	'request',
+	'input',
+	'cookie',
+	'router',
+	'urlgenerator',
+	'cache',
+	'databases',
+	'email',
+	'localization',
+	'proxyclasses',
+	'custom'
 );
 
-// instantiating App
-$app = new App\App();
-
-// DON'T CHANGE THE ATTRIBUTE NAMES IF YOU WANT TO USE THE PREDEFINED ACCESSOR STATIC METHODS
-
-// events
-$app->events = new \Naga\Core\Event\Events();
-
-// instantiating FileSystem
-$app->fileSystem = new \Naga\Core\FileSystem\FileSystem();
-
-// config init
-$app->config = new \Naga\Core\Config\Config($app->fileSystem());
-$app->config()->getFilesInDirectory(__DIR__ . '/../app/config', 'json');
-$app->config()->getFilesInDirectory(__DIR__ . '/../app/config', 'php');
-
-// display errors and error reporting
-if ($app->config('application')->get('debug'))
+// loading files
+$content = '';
+foreach ($loadFiles as $fileName)
 {
-	ini_set('display_errors', 1);
-	error_reporting(E_ALL | E_STRICT);
+	$filePath = "{$baseDir}{$fileName}.php";
+	if (file_exists($filePath))
+		$content .= str_replace('<?php', '', file_get_contents($filePath));
 }
 
-// enable profiling
-if ($app->config('application')->get('debug'))
-	\Naga\Core\Debug\Profiler::enableGlobally();
-
-$app->logger()->notice('Note: Bootstrap time is measured after config, file and event systems are loaded.');
-$app->profiler()->createTimer('Bootstrap time');
-
-// setting timezone
-$app->profiler()->createTimer('Setting timezone');
-if (!date_default_timezone_set($app->config('application')->get('timezone')))
-	date_default_timezone_set('UTC');
-$app->profiler()->stopTimer('Setting timezone');
-
-// adding external classes to autoloader
-$app->profiler()->createTimer('Configuring external classes');
-$autoloader->addExternalClasses(
-	$app->config('externalclasses')->get('classes')
-);
-$autoloader->addExternalResolvers(
-	$app->config('externalclasses')->get('resolvers')
-);
-$app->profiler()->stopTimer('Configuring external classes');
-
-// validator init
-$app->validator = new \Naga\Core\Validation\Validator();
-
-// session init
-$app->profiler()->createTimer('Initializing SessionManager');
-$app->session = new \Naga\Core\Session\SessionManager(new \Naga\Core\Session\Storage\Native());
-$app->profiler()->stopTimer('Initializing SessionManager');
-
-// hasher init
-$app->profiler()->createTimer('Initializing Hasher');
-$app->hasher = new \Naga\Core\Hashing\Hasher();
-$app->hasher()->setAlgorithm(new \Naga\Core\Hashing\Algorithm\BaseSha1());
-$app->profiler()->stopTimer('Initializing Hasher');
-
-// auth init
-$app->profiler()->createTimer('Initializing Auth');
-$app->auth = new \Naga\Core\Auth\Auth($app->session()->storage());
-$app->profiler()->stopTimer('Initializing Auth');
-
-// request init
-$app->profiler()->createTimer('Initializing Request');
-$app->request = new \Naga\Core\Request\Request();
-$app->profiler()->stopTimer('Initializing Request');
-
-// input init
-$app->profiler()->createTimer('Initializing Input');
-$app->input = new \Naga\Core\Request\Input($app->session()->storage(), $app->fileSystem());
-$app->profiler()->stopTimer('Initializing Input');
-
-// cookie init
-$app->profiler()->createTimer('Initializing Cookie and SecureCookie');
-$app->cookie = new \Naga\Core\Cookie\Cookie();
-$app->securecookie = new \Naga\Core\Cookie\SecureCookie();
-$app->profiler()->stopTimer('Initializing Cookie and SecureCookie');
-
-// router init
-$app->profiler()->createTimer('Initializing Router and adding routes');
-$app->router = new \Naga\Core\Routing\Router($app->request());
-$app->router->addRoutes($app->config('routes')->toArray());
-$app->profiler()->stopTimer('Initializing Router and adding routes');
-
-// url generator init
-$app->profiler()->createTimer('Initializing UrlGenerator');
-$app->urlgenerator = new \Naga\Core\Routing\UrlGenerator(
-	$app->config('routes')->toArray(),
-	$app->request(),
-	$app->config('application')->get('resourceRoot')
-);
-$app->profiler()->stopTimer('Initializing UrlGenerator');
-
-// cache connections
-$app->profiler()->createTimer('Initializing CacheManager and adding cache connections');
-$app->cache = new \Naga\Core\Cache\CacheManager();
-if ($app->config()->exists('cacheconnections'))
-{
-	$app->cache->addConnections(
-		$app->cache->getConnectionsFromConfigArray(
-			$app->config('cacheconnections')->toArray()
-		)
-	);
-}
-$app->profiler()->stopTimer('Initializing CacheManager and adding cache connections');
-
-// database connections
-$app->profiler()->createTimer('Initializing DatabaseManager and adding database connections and QueryBuilder');
-$app->database = new Naga\Core\Database\DatabaseManager();
-if ($app->config()->exists('databases'))
-{
-	$app->database(null)->addConnections(
-		$app->database(null)->getConnectionsFromConfigArray(
-			$app->config('databases')->toArray()
-		)
-	);
-
-	// TODO: create query builder instance for each database connection
-	$db = $app->config('databases')->toArray();
-	$db = $db['default'];
-	$app->queryBuilder = new \Naga\Core\Database\MySqlQueryBuilder(
-		'default',
-		$db->host,
-		$db->port,
-		$db->user,
-		$db->password,
-		$db->database,
-		$db->persistent,
-		$db->lazyConnect
-	);
-}
-$app->profiler()->stopTimer('Initializing DatabaseManager and adding database connections and QueryBuilder');
-
-// SwiftMailer config
-$app->profiler()->createTimer('Initializing SwiftMailer');
-require_once(__DIR__ . '/../vendor/swiftmailer/swiftmailer/lib/swift_init.php');
-Swift::init(function()
-{
-	Swift_Preferences::getInstance()->setCharset('UTF-8');
-});
-$app->profiler()->stopTimer('Initializing SwiftMailer');
-
-// adding email connections
-$app->profiler()->createTimer('Initializing Email and adding email connections');
-$app->email = new \Naga\Core\Email\Email();
-if ($app->config()->exists('email'))
-{
-	foreach ($app->config('email')->toArray() as $connectionName => $props)
-	{
-		$className = $props->connectionClass;
-		$app->profiler()->createTimer("Adding connection {$connectionName}.");
-		$conn = new $className((object)$props);
-		$app->profiler()->stopTimer("Adding connection {$connectionName}.");
-		$app->email()->addConnection($connectionName, $conn);
-	}
-}
-$app->profiler()->stopTimer('Initializing Email and adding email connections');
-
-// localization init
-$app->profiler()->createTimer('Initializing Localization');
-$app->localization = new \Naga\Core\Localization\Localization();
-$app->profiler()->stopTimer('Initializing Localization');
-
-// facades init, setting Application instance as global container
-$app->profiler()->createTimer('Initializing facades');
-\Naga\Core\Facade\Facade::setContainer($app);
-$app->profiler()->stopTimer('Initializing facades');
-
-$app->profiler()->stopTimer('Bootstrap time');
+$content .= "\n\$app->profiler()->stopTimer('Bootstrap time');";
+file_put_contents("{$baseDir}_generated.php", "<?php {$content}");

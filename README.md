@@ -1,66 +1,43 @@
 #Naga Framework
 
-*Current version: 2.0a*
+Current version: 2.1b
 
-##Branches
+## Requirements
 
-Naga repository has two branches for every version.
-
+In order to use Naga, your environment has to meet these requirements:  
 ```
-vx.x         contains a usable application structure
-x.x-core     contains only core directory content
-```
-
-##Requirements
-
-In order to use Naga, your environment has to meet these requirements:
-
-```
-Apache       2.2+
-             with mod_rewrite enabled
-PHP          5.4+
-             with enabled extensions: PDO, mb, pgsql
-MySQL        5.1+
-PostgreSQL   9.1+
+Apache       2.2+  
+             with mod_rewrite enabled  
+PHP          5.4+  
+             with PDO and enabled extensions: mbstring, pgsql, mysql, sqlite 
+MySQL        5.1+  
+PostgreSQL   9.1+  
 ```
 
-##Installation
+## Installation
 
-Create your project directory:
+- Create your project directory: ```mkdir project```  
+- Get a copy of Naga from git:  
 ```
-mkdir project
-```
-
-Get a copy of Naga from git:
-```
-git clone https://username@bitbucket.org/BlindingLight/naga-core.git .
+git clone https://username@bitbucket.org/BlindingLight/naga-core.git .  
 cd project
 ```
-
-If you don't have [composer](http://getcomposer.org) installed globally, download it:
+- If you don't have [composer](http://getcomposer.org) installed globally, download it:    
 ```
 curl -sS https://getcomposer.org/installer | php
 To install it globally:
 mv composer.phar /usr/local/bin/composer
 ```
-
-Run composer install to download dependencies:
-```
-composer install
-```
-This will download [Twig](http://twig.sensiolabs.org) and [SwiftMailer](http://swiftmailer.org).
-
-Create a virtual host entry in apache2 config and make it point to
-```
-project/public
-```
+- Run composer install to download dependencies: ```composer install```  
+This will download [Twig](http://twig.sensiolabs.org), [SwiftMailer](http://swiftmailer.org) and Naga framework.
+- Create a virtual host entry in apache2 config and make it point to ```public```
 
 You are ready to develop your first Naga project! :)
 
-##Configuration
+## Configuration
 
-You can find configuration files in ```app/config``` directory.
-Default files:
+You can find configuration files in ```app/config``` directory.  
+Default files:  
 ```
 application.php             application config
 cacheconnections.php        cache connections config
@@ -68,19 +45,27 @@ databases.php               database config
 email.php                   email config
 externalclasses.php         external classes config for autoloader
 routes.php                  app routes
-validation.php              validation rules (currently not working)
+validation.php              validation rules
 ```
 
-You can create as many php files as you want here, even in subdirectories. These configs will be accessible
-via ```App::config('filename')```. If a file is in a subdirectory, you can access it via ```App::config('directory.subdirectory.file')```.
+You can create as many php files as you want here, even in subdirectories. These configs will be accessible  
+via ```App::config('filename')```. If a file is in a subdirectory, you can access it via ```App::config('directory.subdirectory.filename')```.  
 You can create json files too.
 
-##Routing
+## Bootstrap
 
-You can define application routes in ```app/config/routes.php```.
+Run this code every time you change code in any of the php files in ```app/bootstrap``` directory:  
+```
+php app/bootstrap.php update
+```
 
-A self-explanatory example:
+Write your custom code to ```custom.php```. This file will be included last.
 
+## Routing
+
+You can define your routes in ```app/config/routes.php```.
+
+A self-explanatory example:  
 ```php
 return array(
 	// url with params, every parameter must follow this pattern: {paramName|regexp}
@@ -105,10 +90,10 @@ return array(
 )
 ```
 
-##Actions, Controllers, Templates and Views
+## Actions, Controllers, Templates and Views
 
 TODO
 
-##Assets
+## Assets
 
 TODO
