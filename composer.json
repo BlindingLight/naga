@@ -1,9 +1,7 @@
 {
-    "name": "naga/naga",
-    "description": "Naga framework.",
-	"require": {
-		"twig/twig": "1.*",
-		"swiftmailer/swiftmailer": "5.2.0",
-        "naga/framework": "dev-master"
-	}
+  "name": "naga/naga",
+  "description": "Naga framework.",
+  "require": {
+      "naga/framework": "dev-master"
+  }
 }

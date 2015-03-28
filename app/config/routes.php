@@ -9,8 +9,6 @@ return array(
 	),
 	'home' => array(
 		'as' => 'home',
-		'get' => function() {
-			return 'Home page.';
-		},
+		'get' => '\App\Controller\Naga\WelcomeController@getWelcome'
 	),
 );

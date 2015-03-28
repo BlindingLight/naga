@@ -11,5 +11,5 @@ spl_autoload_register(
 		$autoloader->autoload($className);
 	},
 	true,
-	true
+	false
 );
