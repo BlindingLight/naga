@@ -10,6 +10,11 @@ if ($app->config('application')->get('debug'))
 	error_reporting(
 		$app->config('application')->get('errorReportingLevel')
 		? $app->config('application')->get('errorReportingLevel')
-		: E_ALL| E_STRICT
+		: E_ALL | E_STRICT
 	);
+
+	// whoops init
+	$whoops = new \Whoops\Run;
+	$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+	$whoops->register();
 }
