@@ -20,11 +20,4 @@ return array(
 
 	// resource root used by urlGenerator()->resource()
 	'resourceRoot' => '/assets/',
-
-	// template config
-	'templates' => (object)array(
-		'root' => '../app/template',
-		'compiled' => '../app/storage/template/compiled',
-		'cached' => '../app/storage/template/cached',
-	)
 );
