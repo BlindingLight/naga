@@ -41,16 +41,17 @@ Default files:
 ```
 application.php             application config
 cacheconnections.php        cache connections config
+cli.php                     command line config
 databases.php               database config
 email.php                   email config
 externalclasses.php         external classes config for autoloader
 routes.php                  app routes
+twig.php                    Twig related configurations
 validation.php              validation rules
 ```
 
-You can create as many php files as you want here, even in subdirectories. These configs will be accessible  
-via ```App::config('filename')```. If a file is in a subdirectory, you can access it via ```App::config('directory.subdirectory.filename')```.  
-You can create json files too.
+You can create as many php or json files as you want, even in subdirectories. These configs will be accessible  
+like ```App::config('filename')```. If a file is in a subdirectory, you can access it like ```App::config('directory.subdirectory.filename')```. You can access config properties directly like ```App::config('directory.subdirectory.filename.item.property.array.0.subProperty')```    
 
 ## Bootstrap
 
@@ -89,11 +90,3 @@ return array(
 	)
 )
 ```
-
-## Actions, Controllers, Templates and Views
-
-TODO
-
-## Assets
-
-TODO
