@@ -92,11 +92,12 @@ You can define your routes in ```app/config/routes.php```.
 
 A self-explanatory example:  
 ```php
-return array(
+return [
 	// url with params, every parameter must follow this pattern: {paramName|regexp}
-	'test/{id|[0-9]+}' => array(
+	'test/{id|[0-9]+}' => [
 		/*
-		 * you can generate links with this identifier via App::urlGenerator()->route('test', array('id' => 1))
+		 * you can generate links with this identifier via 
+		 * App::urlGenerator()->route('test', array('id' => 1))
 		 * or {{ 'test'|url('id:' ~ something.id) }} in twig templates
 		 * see UrlGenerator docs
 		 */
@@ -120,6 +121,6 @@ return array(
 		'post' => function($params) {
 			return 'These are our params: ' . implode(', ', $params);
 		}
-	)
-)
+	]
+];
 ```
