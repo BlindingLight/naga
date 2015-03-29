@@ -61,18 +61,18 @@ validation.php              validation rules
 
 You can create as many php or json files as you want, even in subdirectories.    
 You can access config file contents like:    
-```
+```php
 App::config('filename')
 ```    
 This returns a ConfigBag instance containing properties set in filename.php or filename.json.    
 
 If a file is in a subdirectory, you can access it like:    
-```
+```php
 App::config('directory.subdirectory.filename')
 ```    
 
 You can access config properties directly like:     
-```
+```php
 App::config('directory.subdirectory.filename.item.property.array.0.subProperty')
 ```  
 This will return the value of 'subProperty' property.
