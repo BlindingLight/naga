@@ -3,9 +3,12 @@
 
 chdir(realpath(__DIR__));
 
-require_once __DIR__ . '/app/bootstrap/_generated.php';
-
-global $app;
+// checking whether generated bootstrap file exists
+$bootstrapPath = __DIR__ . '/app/bootstrap/_generated.php';
+if (file_exists($bootstrapPath))
+	require_once $bootstrapPath;
+else
+	require_once __DIR__ . '/app/bootstrap.php';
 
 $commands = new \Naga\Core\Config\ConfigBag($app->fileSystem(), new \Naga\Core\Debug\Log\CommandLineLogger());
 $commands->copyFrom(['commands' => [
@@ -18,7 +21,11 @@ $commandLine = new \Naga\Core\Cli\CommandLine($commands);
 array_shift($argv);
 
 if (!$argv)
-	exit("Please specify a command!\n");
+{
+	$commandLine->error("Please specify a command!");
+	$commandLine->dumpCommands();
+	exit;
+}
 
 $commandName = array_shift($argv);
 $commandLine->executeCommand($commandName, $argv);

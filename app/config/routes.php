@@ -1,14 +1,14 @@
 <?php
 
-return array(
-	'404' => array(
+return [
+	'404' => [
 		'as' => 'not-found',
 		'get' => function() {
 			return 'Content not found.';
 		},
-	),
-	'home' => array(
+	],
+	'home' => [
 		'as' => 'home',
 		'get' => '\App\Controller\Naga\WelcomeController@getWelcome'
-	),
-);
+	],
+];
