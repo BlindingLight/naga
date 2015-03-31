@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Naga-framework by BlindingLight</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Naga-framework</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/BlindingLight/naga-framework">View the Project on GitHub <small>BlindingLight/naga-framework</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/BlindingLight/naga-framework/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/BlindingLight/naga-framework/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/BlindingLight/naga-framework">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="naga-framework" class="anchor" href="#naga-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>Naga Framework</h1>
+
+<p>Current version: 2.1b</p>
+
+<h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Table of Contents</h2>
+
+<ol>
+<li><a href="#requirements">Requirements</a></li>
+</ol>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>In order to use Naga, your environment has to meet these requirements:  </p>
+
+<pre><code>Apache       2.2+  
+             with mod_rewrite enabled  
+PHP          5.4+  
+             with PDO and enabled extensions: mbstring, pgsql, mysql, sqlite 
+MySQL        5.1+  
+PostgreSQL   9.1+  
+</code></pre>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<ul>
+<li>Create your project directory: <code>mkdir project</code><br>
+</li>
+<li>Get a copy of Naga from git:<br>
+</li>
+</ul>
+
+<pre><code>git clone https://username@bitbucket.org/BlindingLight/naga-core.git .  
+cd project
+</code></pre>
+
+<ul>
+<li>If you don't have <a href="http://getcomposer.org">composer</a> installed globally, download it:<br>
+</li>
+</ul>
+
+<pre><code>curl -sS https://getcomposer.org/installer | php
+To install it globally:
+mv composer.phar /usr/local/bin/composer
+</code></pre>
+
+<ul>
+<li>Run composer install to download dependencies: <code>composer install</code><br>
+This will download <a href="http://twig.sensiolabs.org">Twig</a>, <a href="http://swiftmailer.org">SwiftMailer</a> and Naga framework.</li>
+<li>Create a virtual host entry in apache2 config and make it point to <code>public</code>
+</li>
+</ul>
+
+<p>You are ready to develop your first Naga project! :)</p>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>You can find configuration files in <code>app/config</code> directory.<br>
+Default files:  </p>
+
+<pre><code>application.php             application config
+cacheconnections.php        cache connections config
+cli.php                     command line config
+databases.php               database config
+email.php                   email config
+externalclasses.php         external classes config for autoloader
+routes.php                  app routes
+twig.php                    Twig related configurations
+validation.php              validation rules
+</code></pre>
+
+<p>You can create as many php or json files as you want, even in subdirectories. These configs will be accessible<br>
+like <code>App::config('filename')</code>. If a file is in a subdirectory, you can access it like <code>App::config('directory.subdirectory.filename')</code>. You can access config properties directly like <code>App::config('directory.subdirectory.filename.item.property.array.0.subProperty')</code>    </p>
+
+<h2>
+<a id="bootstrap" class="anchor" href="#bootstrap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bootstrap</h2>
+
+<p>Run this code every time you change code in any of the php files in <code>app/bootstrap</code> directory:  </p>
+
+<pre><code>php app/bootstrap.php update
+</code></pre>
+
+<p>Write your custom code to <code>custom.php</code>. This file will be included last.</p>
+
+<h2>
+<a id="routing" class="anchor" href="#routing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Routing</h2>
+
+<p>You can define your routes in <code>app/config/routes.php</code>.</p>
+
+<p>A self-explanatory example:  </p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">return</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-c">// url with params, every parameter must follow this pattern: {paramName|regexp}</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>test/{id|[0-9]+}<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">        <span class="pl-c">/*</span></span>
+<span class="pl-s1"><span class="pl-c">         * you can generate links with this identifier via App::urlGenerator()-&gt;route('home', array('id' =&gt; 1))</span></span>
+<span class="pl-s1"><span class="pl-c">         * or {{ 'test'|url('id:' ~ something.id) }} in twig templates</span></span>
+<span class="pl-s1"><span class="pl-c">         * see UrlGenerator docs</span></span>
+<span class="pl-s1"><span class="pl-c">         */</span></span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>as<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">        <span class="pl-c">/*</span></span>
+<span class="pl-s1"><span class="pl-c">         * http methods: get, post, put, delete</span></span>
+<span class="pl-s1"><span class="pl-c">         * these can either be a closure or name of a function</span></span>
+<span class="pl-s1"><span class="pl-c">         * the function will be called with first argument containing route parameters</span></span>
+<span class="pl-s1"><span class="pl-c">         * parsed from uri</span></span>
+<span class="pl-s1"><span class="pl-c">         */</span></span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>get<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>\App\Controller\TestController@getTest<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>post<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-k">function</span>(<span class="pl-smi">$params</span>) {</span>
+<span class="pl-s1">            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">'</span>These are our params: <span class="pl-pds">'</span></span> <span class="pl-k">.</span> <span class="pl-c1">implode</span>(<span class="pl-s"><span class="pl-pds">'</span>, <span class="pl-pds">'</span></span>, <span class="pl-smi">$params</span>);</span>
+<span class="pl-s1">        }</span>
+<span class="pl-s1">    )</span>
+<span class="pl-s1">)</span></pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/BlindingLight">BlindingLight</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
