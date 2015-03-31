@@ -3,5 +3,6 @@
   "description": "Naga framework.",
   "require": {
       "naga/framework": "dev-master"
-  }
+  },
+  "minimum-stability": "dev"
 }
