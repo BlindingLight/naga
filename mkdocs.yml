@@ -1,1 +1,12 @@
-site_name: My Docs
+site_name: 'Naga framework documentation'
+repo_url: 'https://github.com/BlindingLight/naga-framework/'
+site_author: 'BlindingLight <bloodredshade@gmail.com>'
+site_dir: './'
+theme_dir: 'theme'
+pages:
+- ['index.md', 'Welcome']
+- ['requirements.md', 'Get started', 'Requirements']
+- ['installation.md', 'Get started', 'Installation']
+- ['configuration.md', 'Basics', 'Configuration']
+- ['routing.md', 'Basics', 'Routing']
+markdown_extensions: [tables, fenced_code]
