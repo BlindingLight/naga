@@ -380,7 +380,12 @@ h4 .small, h5 .small, h6 .small {
 	color: #6a9933;
 }
 
-h1, h2, h3, h4 {
+h1 {
+	margin-top: .5em;
+	margin-bottom: 1em;
+}
+
+h2, h3, h4 {
 	margin-top: 1.5em;
 	margin-bottom: 1em;
 }

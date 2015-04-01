@@ -1,3 +1,5 @@
+# Configuration 
+
 ## Files
 
 You can find configuration files in ```app/config``` directory.  
@@ -37,37 +39,39 @@ This will return the value of 'subProperty' property.
 
 ## Application config
 
-All of the properties below are mandatory.
+File: ```app/config/application.php```
+
+This file contains application specific configuration.
 
 #### timezone <span class="small">[required]</span>
 Sets site's timezone.
 
-#### debug
+#### debug <span class="small">[required]</span>
 Sets debug mode. If it's true, Naga enables profiling and logging and sends profiler and log info to clients.
 Turn this option off in production environment.
 
-#### errorReportingLevel
+#### errorReportingLevel <span class="small">[required]</span>
 
 Sets error reporting level (```error_reporting(App::config('application.errorReportingLevel'));```).
 Set this to 0 in production environment.
 
-#### autoStartSession
+#### autoStartSession <span class="small">[required]</span>
 
 If true Naga calls ```$app->session()->start()``` automatically. If disabled, you have to manually start the session.
 It's suitable for reverse-proxy caching (like Varnish), because you can start the session when a sign up request
 comes in and passes validation. This way the content can be cached until user logs in.
 
-#### defaultRoute
+#### defaultRoute <span class="small">[required]</span>
 
 Sets default route to execute when no route specified (client is on document root). If ```defaultRouteIfLoggedIn```
  is set this applies only to users who aren't logged in.
 
-#### defaultRouteIfLoggedIn
+#### defaultRouteIfLoggedIn <span class="small">[required]</span>
 
 Sets default route to execute when no route specified (client is on document root). This applies to logged in
 users only.
 
-#### resourceRoot
+#### resourceRoot <span class="small">[required]</span>
 
 Sets resource root. This value is used by ```UrlGenerator``` when you call ```App::urlGenerator()->resource()```.  
 
@@ -86,7 +90,43 @@ http://static.example.com/image/test.png
 
 ## Cache config
 
+File: ```app/config/cacheconnections.php```
+
+This file contains an array with cache connections. A connection config is an object and its values
+will be passed to the connection class' constructor in the exact order they are in this object (except ```type```
+which is the connection class name). Basically this means every property other than ```type``` is connection
+class specific, therefore only required if connection class construct requires it.
+
+See [Cache](cache.md)
+
+#### type <span class="small">[required]</span>
+
+Namespaced name of the connection class.
+
+**Properties used by ```MemcachedConnection```:**
+
+#### host <span class="small">[optional|required]</span>
+
+Cache host. If connection type is ```MemcachedConnection``` this property is required.
+
+#### port <span class="small">[optional|required]</span>
+
+Memcached port. If connection type is ```MemcachedConnection``` default value is ```11211```.
+
+**Properties used by every Naga cache connection class:**
+
+#### prefix <span class="small">[optional]</span>
+
+All items stored in the cache will be prefixed with this string. This way you can use multiple 
+cache connections to one cache server and store items with same keys.
+
 ## CLI config
+
+File: ```app/config/cli.php```
+
+This file contains CLI specific configuration.
+
+See [CLI](cli.md)
 
 ## Database config
 

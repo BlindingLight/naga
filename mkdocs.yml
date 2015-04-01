@@ -1,4 +1,4 @@
-site_name: 'Naga framework documentation'
+site_name: 'Naga framework docs'
 repo_url: 'https://github.com/BlindingLight/naga-framework/'
 site_author: 'BlindingLight <bloodredshade@gmail.com>'
 site_dir: './'
@@ -8,5 +8,27 @@ pages:
 - ['requirements.md', 'Get started', 'Requirements']
 - ['installation.md', 'Get started', 'Installation']
 - ['configuration.md', 'Basics', 'Configuration']
+- ['application.md', 'Basics', 'Application class']
 - ['routing.md', 'Basics', 'Routing']
+- ['controllers.md', 'Basics', 'Controllers']
+- ['actions.md', 'Basics', 'Actions']
+- ['views.md', 'Basics', 'Views']
+- ['responses.md', 'Basics', 'Responses']
+- ['request.md', 'Basics', 'Request']
+- ['auth.md', 'Components', 'Authentication']
+- ['cache.md', 'Components', 'Cache']
+- ['cli.md', 'Components', 'Cli']
+- ['auth.md', 'Components', 'Collections']
+- ['auth.md', 'Components', 'Filesystem']
+- ['auth.md', 'Components', 'Hashing']
+- ['auth.md', 'Components', 'Localization']
+- ['auth.md', 'Components', 'Mail']
+- ['auth.md', 'Components', 'Pagination']
+- ['auth.md', 'Components', 'Session']
+- ['auth.md', 'Components', 'Twig & templates']
+- ['auth.md', 'Components', 'Unit testing']
+- ['auth.md', 'Components', 'Validation']
+- ['auth.md', 'Database', 'Basic usage']
+- ['auth.md', 'Database', 'Working with Propel']
+- ['auth.md', 'Database', 'Migrations']
 markdown_extensions: [tables, fenced_code]

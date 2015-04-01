@@ -1,3 +1,5 @@
+## Installation
+
 - Create your project directory: ```mkdir project```  
 - Get a copy of Naga from git:  
 ```
