@@ -1,10 +1,10 @@
 <?php
 
-return array(
-	'resolvers' => array(
+return [
+	'resolvers' => [
 		'Twig' => function($className)
 		{
-			return 'twig/twig/lib/' . str_replace(array('_', "\0"), array('/', ''), $className) . '.php';
+			return 'twig/twig/lib/' . str_replace(['_', "\0"], ['/', ''], $className) . '.php';
 		},
 		'Swift' => function($className)
 		{
@@ -16,8 +16,8 @@ return array(
 
 			return $classPath . $className . '.php';
 		}
-	),
-	'classes' => array(
+	],
+	'classes' => [
 
-	)
-);
+	]
+];

@@ -14,7 +14,7 @@ $app->run();
 $app->finish();
 
 // sending debug information
-if ($app->config('application.debug') && !$app->input()->isJson())
+if ($app->config('application::debug') && !$app->input()->isJson())
 {
 	// sending log
 	$app->logger()->dispatch();

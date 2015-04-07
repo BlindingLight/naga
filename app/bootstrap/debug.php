@@ -1,6 +1,6 @@
 <?php
 
-if ($app->config('application')->get('debug'))
+if ($app->config('application::debug'))
 {
 	// enable profiling
 	\Naga\Core\Debug\Profiler::enableGlobally();
@@ -8,13 +8,16 @@ if ($app->config('application')->get('debug'))
 	// display errors and error reporting
 	ini_set('display_errors', 1);
 	error_reporting(
-		$app->config('application')->get('errorReportingLevel')
-		? $app->config('application')->get('errorReportingLevel')
+		$app->config('application::errorReportingLevel') !== null
+		? $app->config('application::errorReportingLevel')
 		: E_ALL | E_STRICT
 	);
 
 	// whoops init
-	$whoops = new \Whoops\Run;
-	$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-	$whoops->register();
+	if ($app->config('application::whoopsEnabled'))
+	{
+		$whoops = new \Whoops\Run;
+		$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+		$whoops->register();
+	}
 }

@@ -8,12 +8,18 @@ $app->config()->getFilesInDirectory(__DIR__ . '/../config', 'php');
 
 // adding external classes to autoloader
 $app->profiler()->createTimer('Configuring external classes');
-$autoloader->addExternalClasses(
-	$app->config('externalclasses')->get('classes')
-);
-$autoloader->addExternalResolvers(
-	$app->config('externalclasses')->get('resolvers')
-);
+if ($app->config('externalclasses::classes'))
+{
+	$autoloader->addExternalClasses(
+		$app->config('externalclasses::classes')
+	);
+}
+if ($app->config('externalclasses::resolvers'))
+{
+	$autoloader->addExternalResolvers(
+		$app->config('externalclasses::resolvers')
+	);
+}
 $app->profiler()->stopTimer('Configuring external classes');
 
 $app->profiler()->stopTimer('Initializing Config');

@@ -2,21 +2,21 @@
 
 use Naga\Core\Application;
 
-return array(
+return [
 	// debug mode
 	'debug' => true,
 
 	// template config
-	'templates' => (object)array(
+	'templates' => (object)[
 		'root' => '../app/template',
 		'compiled' => '../app/storage/template/compiled',
 		'cached' => '../app/storage/template/cached',
-	),
+	],
 
 	// twig filters to register
 	// callable: first argument is always an Application instance
 	// string: you can use this to register php functions like floor or ceil
-	'filters' => array(
+	'filters' => [
 		// localization filters
 		'localize' => function(Application &$app, $constant) {
 			return $app->localization()->get($constant);
@@ -41,5 +41,5 @@ return array(
 		// floor and ceil
 		'floor' => 'floor',
 		'ceil' => 'ceil',
-	)
-);
+	]
+];

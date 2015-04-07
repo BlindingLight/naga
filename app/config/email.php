@@ -1,19 +1,19 @@
 <?php
 
-return array(
+return [
 	// enable email layer?
 	'enabled' => false,
 	// connections
-	'connections' => array(
-		'default' => (object)array(
+	'connections' => [
+		'default' => (object)[
 			'connectionClass' => '\Naga\Core\Email\SwiftMailConnection',
 			'smtpHost' => '',
+			'smtpPort' => 465,
+			'smtpAuthType' => 'ssl',
 			'smtpUser' => '',
 			'smtpPassword' => '',
-			'smtpAuthType' => 'ssl',
-			'smtpPort' => 465,
-			'senderEmail' => '',
-			'senderName' => ''
-		)
-	)
-);
+			'senderName' => '',
+			'senderEmail' => ''
+		]
+	]
+];
