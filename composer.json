@@ -2,7 +2,14 @@
   "name": "naga/naga",
   "description": "Naga framework.",
   "require": {
-      "naga/framework": "dev-master"
+    "naga/framework": "dev-master",
+    "twig/twig": ">=1.8",
+    "swiftmailer/swiftmailer": ">=5.2.0",
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "require-dev": {
+    "filp/whoops": "1.*",
+    "digitalnature/php-ref": "dev-master",
+    "symfony/var-dumper": "*"
+  }
 }
