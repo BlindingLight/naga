@@ -10,4 +10,9 @@ class App extends Application
 	{
 		parent::run();
 	}
+
+	public function test()
+	{
+		echo 'test';
+	}
 }
