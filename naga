@@ -1,31 +1,40 @@
 #!/usr/bin/env php
 <?php
 
+error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 1);
+
+// removing ./naga
+array_shift($argv);
+
+// getting command name and arguments
+$commandName = array_shift($argv);
+$arguments = $argv;
+
 chdir(realpath(__DIR__));
 
 // checking whether generated bootstrap file exists
 $bootstrapPath = __DIR__ . '/app/bootstrap/_generated.php';
-if (file_exists($bootstrapPath))
+if (file_exists($bootstrapPath) && $commandName != 'force-update-bootstrap')
 	require_once $bootstrapPath;
 else
+	// creating the file
 	require_once __DIR__ . '/app/bootstrap.php';
 
 $commands = new \Naga\Core\Config\ConfigBag($app->fileSystem(), new \Naga\Core\Debug\Log\CommandLineLogger());
 $commands->copyFrom(['commands' => [
-	'update' => new \Naga\Core\Cli\Commands\Update(),
+	'update-bootstrap' => new \Naga\Core\Cli\Commands\UpdateBootstrap(),
 ]]);
 $commands->mergeWith($app->config('cli')->toArray());
 
 $commandLine = new \Naga\Core\Cli\CommandLine($commands);
 
-array_shift($argv);
-
-if (!$argv)
+if (!$commandName)
 {
-	$commandLine->error("Please specify a command!");
+	$commandLine->error('Please specify a command!');
+	$commandLine->info('If your bootstrap is broken, you can fix it by executing "naga force-update-bootstrap".');
 	$commandLine->dumpCommands();
 	exit;
 }
 
-$commandName = array_shift($argv);
 $commandLine->executeCommand($commandName, $argv);

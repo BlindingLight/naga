@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file Concatenates bootstrap code into app/bootstrap/_generated.php. Run this file
+ * @file Concatenates bootstrap code into app/bootstrap/{checksum}.php. Run this file
  * 	every time you make changes in any of the files in app/bootstrap directory.
  */
 
@@ -44,5 +44,8 @@ foreach ($bootstrapFiles as $fileName)
 
 $content .= "\n\$app->profiler()->stopTimer('Bootstrap time');";
 file_put_contents($generatedPath, "<?php {$content}");
+
+if (isset($argv[1]) && ($argv[1] == 'true' || $argv[1] == 'minify'))
+	file_put_contents($generatedPath, php_strip_whitespace($generatedPath));
 
 require_once $generatedPath;
